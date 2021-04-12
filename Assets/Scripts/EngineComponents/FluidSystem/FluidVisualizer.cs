@@ -15,9 +15,9 @@ public class FluidVisualizer : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        float percent = (float)f.dataBuffer[UpdateManager.LastBuffer].amount/f.maxamount;
+        float percent = (float)f.dataBuffer[UpdateManager.CurrentBuffer].amount/f.maxamount;
         i.fillAmount = percent;
             
     }
