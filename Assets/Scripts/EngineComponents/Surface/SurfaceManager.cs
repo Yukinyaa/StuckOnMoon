@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Collections;
+using Unity.Mathematics;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -14,31 +15,68 @@ public class SurfaceManager : MonoBehaviour
     Vector3 gridOffset = Vector3.zero;
     [SerializeField]
     Vector3 gridSize = Vector3.one;
+    [SerializeField]
+    int objectOnHand = 0;
 
+    SurfaceController surface1 = new SurfaceController();
 
 #if UNITY_EDITOR
     public bool isDrawGridHintsEnabled;
 #endif
-    void Start()
-    { 
-
+    private void Start()
+    {
+        SObjectTypes.Init();//move elsewhere
     }
-
 
     // Update is called once per frame
     void Update()
     {
+        DoInput();
+        DoRender();
+    }
+    void DoInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            objectOnHand = -1;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            objectOnHand = 1;
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            objectOnHand = 2;
+        }
+
+        if (objectOnHand == -1)
+        {
+            return;
+            //unimplimented
+        }
+        Vector2 pos = MousePositionAsGridPosition();
+        var placingObjectShape = SObjectTypes.sObjectTypes[objectOnHand].shape;
+        Vector2 posArgumented = pos - (new Vector2(placingObjectShape.size.x, placingObjectShape.size.y) / 2);
+        //render ghost
+
+
         if (Input.GetKeyDown(placeKeyCode))
         {
+            int2 posArgumentedInt2 = new int2(posArgumented);
+            surface1.surfaceObjects.TryPlaceObject(posArgumentedInt2, objectOnHand);
         }
-    }
 
-    Vector2Int MousePositionToGridPosition()
+
+    }
+    void DoRender()
+    { 
+    }
+    public Vector2Int MousePositionAsGridPosition()
     {
         Vector3 input = Input.mousePosition;
         input.z = gridOffset.z;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(input);  //tip: rendering camera may not be main
-        return new Vector2Int(Mathf.FloorToInt(input.x / gridSize.x), Mathf.FloorToInt(input.y / gridSize.y));
+        return new Vector2Int(Mathf.FloorToInt(worldPos.x / gridSize.x), Mathf.FloorToInt(worldPos.y / gridSize.y));
 
     }
 
@@ -59,6 +97,7 @@ public class SurfaceManager : MonoBehaviour
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(gridSize.x, 0), Color.red);
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, gridSize.y), Color.green);
 
+            surface1.surfaceObjects.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f),"stone"));// o.objectType.ToString()
         }
 #endif
     }

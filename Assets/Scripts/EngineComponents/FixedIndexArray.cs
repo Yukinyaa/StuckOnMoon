@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 struct FixedArrayElement<T> {
     public T element;
     public int nextFreeIndex;
+    public override string ToString()
+    {
+        return $"{nextFreeIndex}* : {element.ToString()}";
+    }
 }
 public class FixedIndexArray<T>
 {
@@ -16,8 +20,8 @@ public class FixedIndexArray<T>
     int firstFreeIndex = -1;// first free index, fifo
     int lastFreeIndex = 0;  // last free index, only used on RemovAt(idx)
     int count = 0;          // count basically
-    int maxIndex = 0;
-    FixedArrayElement<T>[] array;
+    int maxIndex = -1;
+    FixedArrayElement<T>[] array = new FixedArrayElement<T>[8];
 
 
     #region get/setters
@@ -43,7 +47,7 @@ public class FixedIndexArray<T>
         result = default;
         if (array[index].nextFreeIndex != -1)
             return false;
-        if (maxIndex > index)
+        if (maxIndex < index)
             return false;
         result = array[index].element;
         return true;
@@ -71,14 +75,15 @@ public class FixedIndexArray<T>
     public int Count => count;
     public int Length => array.Length;
 
-    //tip: use blockcopy to add performance to copy for 
+    //tip: use blockcopy to add performance to copy for => don't have to I guess
     public int Add(T item)
     {
         ++count;
-        if (array.Length >= count)
+        if (array.Length <= count)
         {
             FixedArrayElement<T>[] newArray = new FixedArrayElement<T>[array.Length * 2];
-            Buffer.BlockCopy(array, 0, newArray, 0, array.Length);
+            array.CopyTo(newArray, 0);
+            //Buffer.BlockCopy(array, 0, newArray, 0, array.Length);
             array = newArray;
         }
         
@@ -124,7 +129,7 @@ public class FixedIndexArray<T>
     public void ForEach(Action<T> action)
     {
         T thisIdx;
-        for (int i = 0; i < maxIndex; i++)
+        for (int i = 0; i <= maxIndex; i++)
         {
             if(SafeGet(i, out thisIdx))
                 action(thisIdx);
@@ -133,7 +138,7 @@ public class FixedIndexArray<T>
     public bool Exists(Predicate<T> action)
     {
         T thisIdx;
-        for (int i = 0; i < maxIndex; i++)
+        for (int i = 0; i <= maxIndex; i++)
         {
             if (SafeGet(i, out thisIdx))
                 if (action(thisIdx))

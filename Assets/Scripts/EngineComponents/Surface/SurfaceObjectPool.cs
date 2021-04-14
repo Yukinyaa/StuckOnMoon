@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Collections;
-
+using Unity.Mathematics;
 
 public static class BlockIDConsts
 {
     public const int blank = 0;
 }
 
-class SurfaceObjectPool
+public class SurfaceObjectPool
 {
     [SerializeField]
     public Vector2 gridSize = new Vector2(1, 1);
@@ -22,7 +22,7 @@ class SurfaceObjectPool
 
 
     // 이거 청크로딩, 트리플버퍼링 해야함 :)
-    FixedIndexArray<SurfaceObejct> Objects = new FixedIndexArray<SurfaceObejct>();
+    FixedIndexArray<SurfaceObject> objects = new FixedIndexArray<SurfaceObject>();
 
 
     /// <summary>
@@ -33,27 +33,30 @@ class SurfaceObjectPool
     /// <returns>If placing block has succedeed</returns>
 
 
-    bool TryPlaceObject(Vector2Int pos, int type)
+    public int TryPlaceObject(int2 pos, int type)
     {
-        SurfaceObejct addObj = new SurfaceObejct() { postion = pos, objectType = type };
+        SurfaceObject addObj = new SurfaceObject(pos, type);
         if (CanPlaceObject(addObj) == false)
-            return false;
+            return -1;
         
-        return true;
+        return objects.Add(addObj);
     }
 
-    bool CanPlaceObject(Vector2Int pos, int type)
+    public bool CanPlaceObject(int2 pos, int type)
     {
-        SurfaceObejct addObj = new SurfaceObejct() { postion = pos, objectType = type };
+        SurfaceObject addObj = new SurfaceObject(pos, type);
         if (CanPlaceObject(addObj) == false)
             return false;
         return true;
     }
-
-    bool CanPlaceObject(SurfaceObejct addObj)
+    public void ForEachObject(Action<SurfaceObject> action)
+    {
+        objects.ForEach(action);
+    }
+    bool CanPlaceObject(SurfaceObject addObj)
     {
         //todo: chunk
-        if (Objects.Exists(obj => obj.IsCollideWith(addObj)))
+        if (objects.Exists(obj => obj.IsCollideWith(addObj)))
             return false;
         return true;
     }

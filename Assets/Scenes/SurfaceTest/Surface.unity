@@ -152,9 +152,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92a8781f8c5567442bfc134ca3a0d2f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeKeyCode: 0
+  placeKeyCode: 323
   gridOffset: {x: 0, y: 0, z: 0}
   gridSize: {x: 1, y: 1, z: 1}
+  objectOnHand: 1
   isDrawGridHintsEnabled: 1
 --- !u!4 &933988771
 Transform:

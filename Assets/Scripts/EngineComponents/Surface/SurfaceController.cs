@@ -4,10 +4,11 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine;
 
-public class SurfaceController : MonoBehaviour
-{
+public class SurfaceController
+{ 
+    public SurfaceObjectPool surfaceObjects = new SurfaceObjectPool();
+    List<SurfaceEvent> sEvent;
     
-
     // Start is called before the first frame update
     void Start()
     {
@@ -15,11 +16,12 @@ public class SurfaceController : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void Update()
+    public void DoUpdate()
     {
+        
     }
-    JobHandle DoUpdate()
-    {
+    //JobHandle DoUpdate()
+    //{
         /*
         NativeArray<JobHandle> prepairJobs =
             new NativeArray<JobHandle>(4,
@@ -29,7 +31,7 @@ public class SurfaceController : MonoBehaviour
                 SurfaceElectricityManager.RunPrepairJob() //sum(active producers) / sum(active consumers)
             );
 
-        */
+        //*/
 
 
 
@@ -46,6 +48,6 @@ public class SurfaceController : MonoBehaviour
 
         //if done, calculate logistic movements
 
-        throw new System.NotImplementedException();
-    }
+    //    throw new System.NotImplementedException();
+    //}
 }

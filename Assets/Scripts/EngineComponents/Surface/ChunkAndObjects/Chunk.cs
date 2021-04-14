@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 public class Chunk
 {
     Chunk[] neghbors = new Chunk[8];// +1,1, +1,0, +1,-1, 0,-1, -1,-1
-    List<SurfaceObejct> objects;
+    List<SurfaceObject> objects;
 }
