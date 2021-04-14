@@ -6,9 +6,17 @@ public struct SurfaceObejct
     public int objectType;
     public byte status;//is built, enabled is ghost etc
     //derives from these
-    //>> 대충 만들고 type에 따라서 blob통해서 정보 불러와서 Register 하면될듯합니다 네
     public SObejctShape shape;
-    //public int layer;//bitmask?idk
+
+    public SurfaceObejct(Vector2Int position, int objectType)
+    {
+        this.postion = position;
+        this.objectType = objectType;
+        this.status = 0;
+        this.shape = SObejctTypes.SObjectTypes[objectType].shape;
+
+        this.factoryObjectID = -1;
+    }
     
 
     #region shapes and positions helper
@@ -34,7 +42,7 @@ public struct SurfaceObejct
     #region system obejects
 
     // public uint factorySystemID; there is only one factory system.
-    public uint factoryObjectID;
+    public int factoryObjectID;
 
     #endregion
 }

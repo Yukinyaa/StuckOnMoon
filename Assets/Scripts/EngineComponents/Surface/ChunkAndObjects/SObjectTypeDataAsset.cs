@@ -5,14 +5,16 @@ using UnityEngine;
 public struct SObejctShape
 {
     public Vector2Int size;
+    public int layer;// bitmask idk , 1(collision),2(building),4(background)
     public Vector2Int[,] shape;// if null, then full rectangle shape
 }
 public struct SObjectType
 {
-    SObejctShape shape;
+    public string name;
+    public SObejctShape shape;
 }
 
-public struct SObjectListAsset
+public struct SObjectTypeDataAsset
 {
-    public BlobArray<SObjectType> types;
+    public BlobArray<SObjectType> objectTypes;
 }

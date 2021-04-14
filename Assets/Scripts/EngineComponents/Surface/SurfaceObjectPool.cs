@@ -22,42 +22,39 @@ class SurfaceObjectPool
 
 
     // 이거 청크로딩, 트리플버퍼링 해야함 :)
-    Dictionary<int, SurfaceObejct> Objects = new Dictionary<int, SurfaceObejct>();
+    FixedIndexArray<SurfaceObejct> Objects = new FixedIndexArray<SurfaceObejct>();
 
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="pos"></param>
-    /// <param name="id"></param>
+    /// <param name="type"></param>
     /// <returns>If placing block has succedeed</returns>
 
 
-    bool TryPlaceObject(Vector2Int pos, int id)
+    bool TryPlaceObject(Vector2Int pos, int type)
     {
-        SurfaceObejct addObj = new SurfaceObejct() { postion = pos, objectType = id };
-        if (CanPlaceObject(in addObj) == false)
+        SurfaceObejct addObj = new SurfaceObejct() { postion = pos, objectType = type };
+        if (CanPlaceObject(addObj) == false)
             return false;
         
         return true;
     }
 
-    bool CanPlaceObject(Vector2Int pos, int id)
+    bool CanPlaceObject(Vector2Int pos, int type)
     {
-        SurfaceObejct addObj = new SurfaceObejct() { postion = pos, objectType = id };
-        if (CanPlaceObject(in addObj) == false)
+        SurfaceObejct addObj = new SurfaceObejct() { postion = pos, objectType = type };
+        if (CanPlaceObject(addObj) == false)
             return false;
         return true;
     }
 
-    bool CanPlaceObject(in SurfaceObejct addObj)
+    bool CanPlaceObject(SurfaceObejct addObj)
     {
-
-        foreach (var o in Objects)//todo: chunk
-        {
-            if (o.Value.IsCollideWith(addObj))
-                return false;
-        }
+        //todo: chunk
+        if (Objects.Exists(obj => obj.IsCollideWith(addObj)))
+            return false;
         return true;
     }
 

@@ -10,14 +10,17 @@ struct FixedArrayElement<T> {
     public T element;
     public int nextFreeIndex;
 }
-public class FixedIndexArray<T> : IEnumerable<T>
+public class FixedIndexArray<T>
 {
 
     int firstFreeIndex = -1;// first free index, fifo
     int lastFreeIndex = 0;  // last free index, only used on RemovAt(idx)
     int count = 0;          // count basically
+    int maxIndex = 0;
     FixedArrayElement<T>[] array;
 
+
+    #region get/setters
     public T this[int index] {
         get => (array[index].nextFreeIndex == -1) ? 
             array[index].element : throw new IndexOutOfRangeException("deleted component");
@@ -31,10 +34,22 @@ public class FixedIndexArray<T> : IEnumerable<T>
     }
     public T SafeGet(int index)
     { 
-    return (array[index].nextFreeIndex == -1) ?
-            array[index].element : throw new IndexOutOfRangeException("deleted component");
+        return (array[index].nextFreeIndex == -1) ?
+                array[index].element : throw new IndexOutOfRangeException("deleted component");
     }
-    public void SafeSet(int index, T value)
+
+    public bool SafeGet(int index, out T result)
+    {
+        result = default;
+        if (array[index].nextFreeIndex != -1)
+            return false;
+        if (maxIndex > index)
+            return false;
+        result = array[index].element;
+        return true;
+    }
+
+    public void SafeSet(int index, in T value)
     {
         if (array[index].nextFreeIndex == -1)
             array[index].element = value;
@@ -45,13 +60,18 @@ public class FixedIndexArray<T> : IEnumerable<T>
     {
         return array[index].element;
     }
-    public void Set(int index, T value)
+    public void Set(int index, in T value)
     {
         array[index].element = value;
     }
-    //tip: use blockcopy to add performance to copy for 
-    public int Count => count;
+    #endregion
 
+
+    
+    public int Count => count;
+    public int Length => array.Length;
+
+    //tip: use blockcopy to add performance to copy for 
     public int Add(T item)
     {
         ++count;
@@ -65,6 +85,7 @@ public class FixedIndexArray<T> : IEnumerable<T>
         if (firstFreeIndex == -1)
         {
             array[count - 1] = new FixedArrayElement<T> { element = item, nextFreeIndex = -1 };
+            maxIndex++;
             return count - 1;
         }
         else
@@ -99,8 +120,25 @@ public class FixedIndexArray<T> : IEnumerable<T>
 
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+
+    public void ForEach(Action<T> action)
     {
-        throw new NotImplementedException();
+        T thisIdx;
+        for (int i = 0; i < maxIndex; i++)
+        {
+            if(SafeGet(i, out thisIdx))
+                action(thisIdx);
+        }
+    }
+    public bool Exists(Predicate<T> action)
+    {
+        T thisIdx;
+        for (int i = 0; i < maxIndex; i++)
+        {
+            if (SafeGet(i, out thisIdx))
+                if (action(thisIdx))
+                    return true;
+        }
+        return false;
     }
 }
