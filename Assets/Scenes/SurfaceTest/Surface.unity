@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 933988771}
   - component: {fileID: 933988770}
+  - component: {fileID: 933988772}
   m_Layer: 0
   m_Name: SurfaceControllers
   m_TagString: Untagged
@@ -155,8 +156,9 @@ MonoBehaviour:
   placeKeyCode: 323
   gridOffset: {x: 0, y: 0, z: 0}
   gridSize: {x: 1, y: 1, z: 1}
-  objectOnHand: 1
-  isDrawGridHintsEnabled: 1
+  objectOnHand: 4
+  isDrawGridGizmoEnabled: 0
+  isDrawBlockGizmoEnabled: 1
 --- !u!4 &933988771
 Transform:
   m_ObjectHideFlags: 0
@@ -171,6 +173,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &933988772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933988769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be6f09b617c814b44bf24f0e7b642752, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1541983039
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,7 +238,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 14.291555
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -248,7 +262,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1541983039}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 3.54, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
