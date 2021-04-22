@@ -33,12 +33,27 @@ public struct SurfaceObject
     public int MinY { get => postion.y; }
     public int MaxX { get => postion.x + shape.size.x; }
     public int MaxY { get => postion.y + shape.size.y; }
-    
+
+    public float MidX { get => postion.x + shape.size.x/2f; }
+    public float MidY { get => postion.y + shape.size.y/2f; }
+    public Vector2 Middle { get => new Vector2(MidX, MidY); }
+
     public bool IsCollideWith(SurfaceObject other) //basically aabb
     {
+        if ((this.shape.layer & other.shape.layer) == 0)
+        {
+            return false;
+        }
         //todo : add shape logic
         if (MaxX <= other.MinX || MinX >= other.MaxX) return false;
         if (MaxY <= other.MinY || MinY >= other.MaxY) return false;
+        return true;
+    }
+    public bool IsCollideWith(int2 position, SObejctShape other) //basically aabb
+    {
+        //todo : add shape logic
+        if (MaxX <= position.x || MinX >= position.x + other.size.x) return false;
+        if (MaxY <= position.y || MinY >= position.y + other.size.y) return false;
         return true;
     }
 

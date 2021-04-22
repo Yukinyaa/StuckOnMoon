@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-struct FixedArrayElement<T> {
+public struct FixedArrayElement<T> {
     public T element;
     public int nextFreeIndex;
     public override string ToString()
@@ -14,6 +14,11 @@ struct FixedArrayElement<T> {
         return $"{nextFreeIndex}* : {element.ToString()}";
     }
 }
+
+public delegate void ModAction<T>(ref T target);
+
+
+//todo: serialize, deserialize
 public class FixedIndexArray<T>
 {
 
@@ -102,6 +107,20 @@ public class FixedIndexArray<T>
             return insertTo;
         }
     }
+    public void CopyTo(FixedIndexArray<T> other)
+    {
+        other.CopyFrom(firstFreeIndex, lastFreeIndex, count, maxIndex, array);
+    }
+    public void CopyFrom(int firstFreeIndex, int lastFreeIndex, int count, int maxIndex, FixedArrayElement<T>[] array)
+    {
+        this.firstFreeIndex = firstFreeIndex;
+        this.lastFreeIndex = lastFreeIndex;
+        this.count = count;
+        this.maxIndex = maxIndex;
+        if (array.Length > this.array.Length)
+            this.array = new FixedArrayElement<T>[array.Length];
+        array.CopyTo(this.array, 0);
+    }
 
     public IEnumerator<T> GetEnumerator()
     {
@@ -126,6 +145,15 @@ public class FixedIndexArray<T>
     }
 
 
+    public void ForEach(ModAction<T> action)
+    {
+        T thisIdx;
+        for (int i = 0; i <= maxIndex; i++)
+        {
+            if (SafeGet(i, out thisIdx))
+                action(ref array[i].element);
+        }
+    }
     public void ForEach(Action<T> action)
     {
         T thisIdx;

@@ -13,8 +13,3 @@ public struct SObjectType
     public string name;
     public SObejctShape shape;
 }
-
-public struct SObjectTypeDataAsset
-{
-    public BlobArray<SObjectType> objectTypes;
-}

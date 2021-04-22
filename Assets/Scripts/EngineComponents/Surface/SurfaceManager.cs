@@ -9,6 +9,7 @@ using UnityEditor;
 
 public class SurfaceManager : MonoBehaviour
 {
+
     [SerializeField]
     public KeyCode placeKeyCode;
     [SerializeField]
@@ -18,7 +19,7 @@ public class SurfaceManager : MonoBehaviour
     [SerializeField]
     int objectOnHand = 0;
 
-    SurfaceController surface1 = new SurfaceController();
+    SurfaceController surface1;// = new SurfaceController();
 
 #if UNITY_EDITOR
     public bool isDrawGridHintsEnabled;
@@ -26,11 +27,16 @@ public class SurfaceManager : MonoBehaviour
     private void Start()
     {
         SObjectTypes.Init();//move elsewhere
+        surface1 = new SurfaceController();
     }
-
-    // Update is called once per frame
-    void Update()
+    public void PrepareFrame()
     {
+        surface1.PrepareFrame();
+    }
+    // Update is called once per frame
+    public void LateUpdate()
+    {
+        PrepareFrame();
         DoInput();
         DoRender();
     }
@@ -56,6 +62,7 @@ public class SurfaceManager : MonoBehaviour
         }
         Vector2 pos = MousePositionAsGridPosition();
         var placingObjectShape = SObjectTypes.sObjectTypes[objectOnHand].shape;
+
         Vector2 posArgumented = pos - (new Vector2(placingObjectShape.size.x, placingObjectShape.size.y) / 2);
         //render ghost
 
@@ -63,7 +70,8 @@ public class SurfaceManager : MonoBehaviour
         if (Input.GetKeyDown(placeKeyCode))
         {
             int2 posArgumentedInt2 = new int2(posArgumented);
-            surface1.surfaceObjects.TryPlaceObject(posArgumentedInt2, objectOnHand);
+            while (posArgumentedInt2.x < 0) posArgumentedInt2.x += surface1.chunkController.mapWidth;
+            surface1.chunkController.PlaceObject(posArgumentedInt2, objectOnHand);
         }
 
 
@@ -76,7 +84,7 @@ public class SurfaceManager : MonoBehaviour
         Vector3 input = Input.mousePosition;
         input.z = gridOffset.z;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(input);  //tip: rendering camera may not be main
-        return new Vector2Int(Mathf.FloorToInt(worldPos.x / gridSize.x), Mathf.FloorToInt(worldPos.y / gridSize.y));
+        return new Vector2Int(Mathf.FloorToInt((worldPos.x - gridOffset.x) / gridSize.x), Mathf.FloorToInt(worldPos.y - gridOffset.y / gridSize.y));
 
     }
 
@@ -87,17 +95,22 @@ public class SurfaceManager : MonoBehaviour
         if (isDrawGridHintsEnabled)
         {
             for (int x = -4; x <= 4; x++)
-                for (int y = -4; y <= 4; y++)
+                for (int y = 0; y <= 8; y++)
                 {
+                    
                     DebugExtension.DrawPoint(new Vector3(gridOffset.x + gridSize.x * x, gridOffset.y + gridSize.y * y));
-                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{x},{y}", GUIStyle.none);
+                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+surface1?.chunkController.mapWidth:x)},{y}", GUIStyle.none);
                 }
                     
 
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(gridSize.x, 0), Color.red);
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, gridSize.y), Color.green);
 
-            surface1.surfaceObjects.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f),"stone"));// o.objectType.ToString()
+            surface1?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f),"stone"));// o.objectType.ToString()
+            surface1?.chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
+                                new Bounds(o.Middle, new Vector2(o.shape.size.x, o.shape.size.y))
+                    ));// o.objectType.ToString()
+
         }
 #endif
     }

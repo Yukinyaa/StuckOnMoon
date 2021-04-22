@@ -6,13 +6,19 @@ using UnityEngine;
 
 public class SurfaceController
 { 
-    public SurfaceObjectPool surfaceObjects = new SurfaceObjectPool();
-    List<SurfaceEvent> sEvent;
     
+    public  //should delet
+        ChunkManager chunkController = new ChunkManager();
+    BufferedFixedIndexArray<SurfaceObject> surfaceObejcts = new BufferedFixedIndexArray<SurfaceObject>();
+    
+    List<SurfaceEvent> sEvent;
+    public void PrepareFrame()
+    {
+        chunkController.PrepareFrame();
+    }
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
