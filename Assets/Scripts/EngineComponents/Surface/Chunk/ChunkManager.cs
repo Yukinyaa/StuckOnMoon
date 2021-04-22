@@ -65,11 +65,11 @@ public class ChunkManager
 
         for (int xChunk = addObj.MinX / chunkSize; xChunk <= maxXChunk; ++xChunk)
         { 
-            for (int yChunk = addObj.MaxY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
+            for (int yChunk = addObj.MinY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null)
                     chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<SurfaceObject>();
-                chunks[xChunk, yChunk].Current.Add(addObj);
+                chunks[xChunk % xChunkCount, yChunk].Current.Add(addObj);
             }
         }
         return true;
@@ -97,9 +97,9 @@ public class ChunkManager
 
         for (int xChunk = addObj.MinX / chunkSize; xChunk <= maxXChunk; ++xChunk)
         {
-            for (int yChunk = addObj.MaxY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
+            for (int yChunk = addObj.MinY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
             {
-                if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk, yChunk].Current.Exists(obj => obj.IsCollideWith(addObj)))
+                if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk % xChunkCount, yChunk].Current.Exists(obj => obj.IsCollideWith(addObj)))
                     return false;
             }
         }
