@@ -34,8 +34,8 @@ public struct SurfaceObject
     public int MaxX { get => postion.x + shape.size.x; }
     public int MaxY { get => postion.y + shape.size.y; }
 
-    public float MidX { get => postion.x + shape.size.x/2f; }
-    public float MidY { get => postion.y + shape.size.y/2f; }
+    public float MidX { get => postion.x + shape.size.x / 2f; }
+    public float MidY { get => postion.y + shape.size.y / 2f; }
     public Vector2 Middle { get => new Vector2(MidX, MidY); }
 
     public bool IsCollideWith(SurfaceObject other) //basically aabb
