@@ -2,17 +2,24 @@
 layout: default
 ---
 
-<header>
-  <h1 class="post-title">{{ page.title }}</h1>
-</header>
-<div class="content">
-  {% include post-meta.html post=page %}
+{% include site-header.html %}
 
-  <div class="post-body">
+<main class="main  container">
+
+  <article class="article  article--post  content  typeset">
+
+    <h1>{{ page.title }}</h1>
+    {% include post-meta.html %}
     {{ content }}
-    {% include post-tags.html post=page %}
-  </div>
 
-  {% include comments.html %}
-  {% include related_posts.html %}
-</div>
+    {% include nav-share.html %}
+
+    {% include post-comments.html %}
+
+  </article>
+
+  {% if page.aside == true %}{% include site-aside.html %}{% endif %}
+
+</main>
+
+{% include site-footer.html %}

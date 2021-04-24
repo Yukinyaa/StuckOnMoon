@@ -1,29 +1,16 @@
-<div class="post-meta">
-  <span class="post-date">{{ include.post.date | date_to_string }}</span>
-  <span class="post-categories">
-    {% for category in include.post.categories %}
-      &bull;
-
-      {% comment %}
-        Check if this category has a corresponding page before decide
-        to link to it. This is an O(n^2) operations so consider removing
-        it and linking for all categories (or no categories) if this
-        site has a lot of pages and/or a lot of categories.
-      {% endcomment %}
-      {% assign category_page = false %}
-      {% for node in site.pages %}
-        {% if node.category == category or node.title == category %}
-          {% assign category_page = node %}
-        {% endif %}
-      {% endfor %}
-
-      {% if category_page %}
-        <a href="{{ category_page.url | relative_url }}">
-          {{ category_page.title | default: category_page.category }}
-        </a>
-      {% else %}
-        {{ category }}
-      {% endif %}
+{% if page.categories %}
+  {% capture categories %}
+    {% for category in page.categories %}
+      <span class="label  label--category"><a href="{{ site.baseurl }}/categories/#{{ category | downcase }}">{{ category }}</a></span>{% if forloop.last == false %},{% endif %}
     {% endfor %}
-  </span>
-</div>
+  {% endcapture %}
+{% elsif page.category %}
+  {% capture categories %}
+    <span class="label  label--category"><a href="{{ site.baseurl }}/categories/#{{ page.category | downcase }}">{{ page.category }}</a></span>
+  {% endcapture %}
+{% endif %}
+
+<small class="small  post-meta">
+  {% assign date_format = site.date_format | default: "%d %b %Y" %}
+  {{ categories | append: "&nbsp;&middot;&nbsp;" }}<time datetime="{{ page.date | date_to_xmlschema }}" class="time">{{ page.date | date: date_format }}</time>
+</small>
