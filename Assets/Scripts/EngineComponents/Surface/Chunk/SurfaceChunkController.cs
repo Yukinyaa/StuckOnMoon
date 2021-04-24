@@ -12,7 +12,7 @@ public static class BlockIDConsts
     public const int blank = 0;
 }
 
-public class ChunkManager
+public class SurfaceChunkController
 {
     public const int chunkSize = 64;
     public int mapWidth;
@@ -32,16 +32,17 @@ public class ChunkManager
         }
     }
 
-    BufferedFixedIndexArray<SurfaceObject>[,] chunks;
-
-    public ChunkManager()
+    BufferedFixedIndexArray<int>[,] chunks;
+    BufferedFixedIndexArray<SurfaceObject> sObjects;
+    public SurfaceChunkController(BufferedFixedIndexArray<SurfaceObject> surfaceObejcts)
     {
         mapWidth = 4200;
         mapHeight = 1200;
+        sObjects = surfaceObejcts;
         xChunkCount = mapWidth / chunkSize + 1;
         lastXChunkWidth = mapWidth % chunkSize;
-        chunks = new BufferedFixedIndexArray<SurfaceObject>[mapWidth / chunkSize + 1, mapHeight / chunkSize + 1];
-        //chunk 0: 0 ~ chunksize -1, 1: chunksize ~ chunksize*2-1
+        chunks = new BufferedFixedIndexArray<int>[mapWidth / chunkSize + 1, mapHeight / chunkSize + 1];
+        //chunk 0: 0 ~ chunksize -1, chunk 1: chunksize ~ chunksize*2-1
     }
 
 
@@ -51,9 +52,9 @@ public class ChunkManager
     /// <param name="pos"></param>
     /// <param name="type"></param>
     /// <returns>If placing block has succedeed</returns>
-    public bool PlaceObject(int2 pos, int type)
+    public bool RegisterObject(int objectIdx)
     {
-        SurfaceObject addObj = new SurfaceObject(pos, type);
+        SurfaceObject addObj = sObjects.GetCurrent(objectIdx);
         if (CanPlaceObject(addObj) == false)
             return false;
 
@@ -68,8 +69,8 @@ public class ChunkManager
             for (int yChunk = addObj.MinY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null)
-                    chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<SurfaceObject>();
-                chunks[xChunk % xChunkCount, yChunk].Current.Add(addObj);
+                    chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<int>();
+                chunks[xChunk % xChunkCount, yChunk].Current.Add(objectIdx);
             }
         }
         return true;
@@ -86,7 +87,7 @@ public class ChunkManager
     {
         foreach ( var a in chunks)
         {
-            a?.Current.ForEach(action);
+            a?.Current.ForEach(aa=>action(sObjects.GetCurrent(aa)));
         }
     }
     bool CanPlaceObject(SurfaceObject addObj)

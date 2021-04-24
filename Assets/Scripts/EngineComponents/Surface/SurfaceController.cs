@@ -5,23 +5,32 @@ using Unity.Jobs;
 using UnityEngine;
 
 public class SurfaceController
-{ 
-    
+{
+    ulong CreatedAt;
     public  //should delet
-        ChunkManager chunkController = new ChunkManager();
-    BufferedFixedIndexArray<SurfaceObject> surfaceObejcts = new BufferedFixedIndexArray<SurfaceObject>();
+        SurfaceChunkController chunkController;
+    BufferedFixedIndexArray<SurfaceObject> surfaceObejcts;
     
     List<SurfaceEvent> sEvent;
+    public void RegisterEvents(List<SurfaceEvent> @event)
+    {
+        Debug.Assert(@event.TrueForAll(a => a.RegistedFrame == UpdateManager.frameNo));
+            sEvent = @event;
+    }
+    public SurfaceController()
+    {
+        CreatedAt = UpdateManager.frameNo;
+        surfaceObejcts = new BufferedFixedIndexArray<SurfaceObject>();
+        chunkController = new SurfaceChunkController(surfaceObejcts);
+    }
     public void PrepareFrame()
     {
         chunkController.PrepareFrame();
     }
-    // Start is called before the first frame update
-    void Start()
-    {
+    public void DoRender()
+    { 
+        
     }
-
-    // Update is called once per frame
     public void DoUpdate()
     {
         

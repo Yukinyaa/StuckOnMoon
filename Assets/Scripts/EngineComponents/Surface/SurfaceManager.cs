@@ -7,7 +7,7 @@ using Unity.Mathematics;
 using UnityEditor;
 #endif
 
-public class SurfaceManager : MonoBehaviour
+public class SurfaceManager : Singleton<SurfaceManager>
 {
 
     [SerializeField]
@@ -19,7 +19,7 @@ public class SurfaceManager : MonoBehaviour
     [SerializeField]
     int objectOnHand = 0;
 
-    SurfaceController surface1;// = new SurfaceController();
+    FixedIndexArray<SurfaceController> surfaces;// = new SurfaceController();
 
 #if UNITY_EDITOR
     [SerializeField]
@@ -27,19 +27,22 @@ public class SurfaceManager : MonoBehaviour
     [SerializeField]
     private bool isDrawBlockGizmoEnabled;
 #endif
-    private void Start()
+    int currentSurface = 0;
+    int viewingSurface = 0;
+    private void Awake()
     {
         SObjectTypes.Init();//move elsewhere
-        surface1 = new SurfaceController();
+        surfaces = FixedIndexArray<SurfaceController>();
+        new SurfaceController();
+
     }
     public void PrepareFrame()
     {
-        surface1.PrepareFrame();
+        surface.PrepareFrame();
     }
     // Update is called once per frame
-    public void LateUpdate()
+    public void DoUpdate()
     {
-        PrepareFrame();
         DoInput();
         DoRender();
     }
@@ -81,8 +84,14 @@ public class SurfaceManager : MonoBehaviour
         if (Input.GetKey(placeKeyCode))
         {
             int2 posArgumentedInt2 = new int2(posArgumented);
-            while (posArgumentedInt2.x < 0) posArgumentedInt2.x += surface1.chunkController.mapWidth;
-            surface1.chunkController.PlaceObject(posArgumentedInt2, objectOnHand);
+            while (posArgumentedInt2.x < 0) posArgumentedInt2.x += surface.chunkController.mapWidth;
+            surface.chunkController.CanPlaceObject(posArgumentedInt2, objectOnHand);
+
+            SurfaceObject newObject = new SurfaceObject(posArgumentedInt2, objectOnHand);
+            int newObjectIndex = surface
+            surface.chunkController.RegisterObject(posArgumentedInt2, objectOnHand);
+
+            SurfaceEvent
         }
 
 
@@ -110,7 +119,7 @@ public class SurfaceManager : MonoBehaviour
                 {
                     
                     DebugExtension.DrawPoint(new Vector3(gridOffset.x + gridSize.x * x, gridOffset.y + gridSize.y * y));
-                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+surface1?.chunkController.mapWidth:x)},{y}", GUIStyle.none);
+                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+surface?.chunkController.mapWidth:x)},{y}", GUIStyle.none);
                 }
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(gridSize.x, 0), Color.red);
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, gridSize.y), Color.green);
@@ -120,8 +129,8 @@ public class SurfaceManager : MonoBehaviour
         if (isDrawBlockGizmoEnabled)
         {
             //surface1?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), SObjectTypes.sObjectTypes[o.objectType].name));// o.objectType.ToString()
-            surface1?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
-            surface1?.chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
+            surface?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
+            surface?.chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
                                 new Bounds(o.Middle, new Vector2(o.shape.size.x, o.shape.size.y))
                     ));// o.objectType.ToString()
         }

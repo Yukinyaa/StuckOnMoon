@@ -2,19 +2,19 @@
 using UnityEngine;
 using System.Collections;
 
-public class UpdateManager : MonoBehaviour
+public class UpdateManager : Singleton<UpdateManager>
 {
-    public static UpdateManager Instance { get; private set; }
 
-    private void Awake()
+    protected override void Awake()
     {
-        Instance = this;
+        base.Awake();
+        Init();
     }
     public const int BufferCount = 3;
     public static int CurrentBuffer; //{ get; private set; }
     public static int LastBuffer;// { get; private set; }//todo re-enable for release
     public static byte frameHash;// { get; private set; }
-    public ulong frameNo { get; private set; } = 0;
+    public static ulong frameNo { get; private set; } = 0;
 
     void Init()
     {
@@ -29,8 +29,6 @@ public class UpdateManager : MonoBehaviour
         frameHash = (byte)(frameNo % byte.MaxValue);
         LastBuffer = CurrentBuffer;
         CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
-        
-
-
+        SurfaceManager.Instance.DoUpdate();
     }
 }

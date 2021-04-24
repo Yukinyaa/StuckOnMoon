@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static UpdateManager;
 
-class BufferedFixedIndexArray<T>
+public class BufferedFixedIndexArray<T>
 {
     FixedIndexArray<T>[] arrays = new FixedIndexArray<T>[UpdateManager.BufferCount];
     #region get/setters

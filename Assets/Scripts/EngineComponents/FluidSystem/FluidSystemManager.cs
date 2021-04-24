@@ -38,7 +38,7 @@ public class FluidSystemManager : MonoBehaviour
 
             if (body.dataBuffer[CurrentBuffer].amount >= body.maxamount)
             {
-                for (int i = 0; i < body.neighboringPipes.Count; i++)//(주변 파이프압 - 마찰)중 최댓값 도입
+                for (int i = 0; i < body.neighboringPipes.Count; i++)//todo: (주변 파이프압 - 마찰)중 최댓값 도입
                 {
                     // 파이프 마찰 계산
                     int pressure = (int)(body.neighboringPipes[i].dataBuffer[LastBuffer].pressure
