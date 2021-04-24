@@ -23,14 +23,6 @@ I can stop working part-time jobs if you support me :)
 
 {% include button.html text="Buy me a coffee ☕️" link="https://ko-fi.com/stuckonmoon" color="#f68140" %}
 
-## Some backstory
-
-Well, with some exaggeration, I have been planning this game since 2012.
-
-Even though I wanted to work on this game for years, I had doubt about my programming/self-management skill.
-For few years, I worked on multiple(around 10) game projects, been on multiple small to big teams.
-
-After four years of experience, I finally decided to work on this game.
 
 <!--
 ## Customising
