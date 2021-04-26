@@ -4,10 +4,8 @@ feature_text: |
   ## Stuck on moon
   Stuck on Moon is a game about factory, robot waifu and rockets!
 feature_image: "https://picsum.photos/1300/400?image=989"
-excerpt: "Alembic is a starting point for [Jekyll](https://jekyllrb.com/) projects. Rather than starting from scratch, this boilerplate is designed to get the ball rolling immediately. Install it, configure it, tweak it, push it."
+excerpt: "main page for blog"
 ---
-
-
 ## Introduction
 Stuck on moon is(or will be) a game that is focused in automation.
 
