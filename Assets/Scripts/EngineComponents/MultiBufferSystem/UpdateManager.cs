@@ -11,10 +11,17 @@ public class UpdateManager : Singleton<UpdateManager>
         base.Awake();
         Init();
     }
-    public const int BufferCount = 3;
+    public const int BufferCount = 4;
     public static int CurrentBuffer; //{ get; private set; }
     public static int LastBuffer;// { get; private set; }//todo re-enable for release
     public static byte frameHash;// { get; private set; }
+    public static int? LockedFrame = null;
+    public static int NextBuffer
+    {
+        get => (CurrentBuffer + 1) % BufferCount == LockedFrame ?
+              (CurrentBuffer + 2) % BufferCount :
+              (CurrentBuffer + 1) % BufferCount;
+    }
     public static ulong FrameNo { get; private set; } = 0;
     public static ulong UpdatingFrame => FrameNo;
     public static ulong LastFrame => FrameNo - 1;
@@ -35,7 +42,10 @@ public class UpdateManager : Singleton<UpdateManager>
         ++FrameNo;
         frameHash = (byte)(FrameNo % byte.MaxValue);
         LastBuffer = CurrentBuffer;
-        CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
+        do
+        {
+            CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
+        } while (LockedFrame != CurrentBuffer);
 
         var prepair = SurfaceManager.Instance.PrepareFrame();
 

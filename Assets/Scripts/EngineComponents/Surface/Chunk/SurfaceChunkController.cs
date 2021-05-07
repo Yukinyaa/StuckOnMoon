@@ -19,16 +19,18 @@ public class SurfaceChunkController
     public int mapHeight;
     public int xChunkCount;
     public int lastXChunkWidth;
+    public string name = "nauvis";
 
 
 
     
     public Vector2 gridSize = new Vector2(1, 1);
-    public void PrepareFrame()
+    public void PrepareNextFrame()
     {
+        
         foreach (var a in chunks)
         {
-            a?.CopyLast();
+            a?.CopyToNext();
         }
     }
 

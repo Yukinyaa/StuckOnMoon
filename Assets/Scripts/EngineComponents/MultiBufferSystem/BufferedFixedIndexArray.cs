@@ -21,8 +21,13 @@ public class BufferedFixedIndexArray<T>
     {
         Last.CopyTo(Current);
     }
+    public void CopyToNext()
+    {
+        Current.CopyTo(Next);
+    }
     public FixedIndexArray<T> Current { get => arrays[CurrentBuffer]; }
     public FixedIndexArray<T> Last { get => arrays[LastBuffer]; }
+    public FixedIndexArray<T> Next { get => arrays[NextBuffer]; }
     #endregion
     public ulong createdTime { get; private set; }
     public BufferedFixedIndexArray()

@@ -12,21 +12,41 @@ public class SurfaceController
     BufferedFixedIndexArray<SurfaceObject> surfaceObejcts;
     
     List<SurfaceEvent> sEvent;
-    public void RegisterEvents(List<SurfaceEvent> @event)
-    {
-        Debug.Assert(@event.TrueForAll(a => a.RegistedFrame == UpdateManager.FrameNo));
-        sEvent = @event;
-    }
     public SurfaceController()
     {
         CreatedAt = UpdateManager.FrameNo;
         surfaceObejcts = new BufferedFixedIndexArray<SurfaceObject>();
         chunkController = new SurfaceChunkController(surfaceObejcts);
     }
-    public void PrepareFrame()
+
+    public void RegisterEvents(List<SurfaceEvent> events)
     {
-        chunkController.PrepareFrame();
+        Debug.Assert(events.TrueForAll(a => a.RegistedFrame == UpdateManager.FrameNo));
+        sEvent = events;
+        foreach (var ev in events)
+        {
+            if (ev is SurfacePlaceObjectEvent)
+            {
+                SurfacePlaceObjectEvent spoe = ev as SurfacePlaceObjectEvent;
+
+
+                chunkController.CanPlaceObject(spoe.position, spoe.blockType);
+
+                SurfaceObject newObject = new SurfaceObject(spoe.position, spoe.blockType);
+                int newObjectIndex = surfaceObejcts.Current.Add(newObject);
+                chunkController.RegisterObject(newObjectIndex);
+
+                //SurfaceEvent
+            }
+        }
     }
+
+    public void PrepareNextFrame()
+    {
+        surfaceObejcts.CopyToNext();
+        chunkController.PrepareNextFrame();
+    }
+    
     public void DoRender()
     { 
         

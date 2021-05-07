@@ -47,15 +47,39 @@ public class SurfaceManager : Singleton<SurfaceManager>
     {
         return Task.Factory.StartNew( () =>
         {
-            var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.PrepareFrame(); });
+            var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.PrepareNextFrame(); });
             Task.WaitAll( tasks.ToArray() );
         });
     }
-    // Update is called once per frame
-    public void DoUpdate()
+    public void ProcessEvents()
     {
-        DoInput();
-        DoRender();
+        var events = EventManager.Instance.PopEvents(UpdateManager.FrameNo);
+
+
+        //process global event ex)chatting etc
+
+        for (int i = 0; i < surfaces.MaxIndex; ++i)
+        {
+            surfaces.SafeGet(i, out var surface);
+            surface.RegisterEvents(events.Where(a => a.SurfaceNo == i).ToList());
+
+            //can multithread idk
+        }
+    }
+    // Update is called once per frame
+    public Task DoUpdate()
+    {
+        return Task.Factory.StartNew(() =>
+        {
+            UnityEngine.Profiling.Profiler.BeginThreadProfiling("Custom Update Threads", "Surfaces Update");
+
+
+            UnityEngine.Profiling.Profiler.BeginSample("PrepairNextFrame");
+            PrepareFrame().Wait();
+            UnityEngine.Profiling.Profiler.EndSample();
+
+            UnityEngine.Profiling.Profiler.EndThreadProfiling();
+        });
     }
     public void DoInput()
     {
@@ -100,13 +124,6 @@ public class SurfaceManager : Singleton<SurfaceManager>
             SurfaceEvent placeObjEvent =  new SurfacePlaceObjectEvent(viewingSurface, objectOnHand, posArgumentedInt2);
 
             EventManager.Instance.RegisterEvent(placeObjEvent);
-            //ViewingSurface.chunkController.CanPlaceObject(posArgumentedInt2, objectOnHand);
-
-            SurfaceObject newObject = new SurfaceObject(posArgumentedInt2, objectOnHand);
-            //int newObjectIndex = 
-            //surface.chunkController.RegisterObject(posArgumentedInt2, objectOnHand);
-
-            //SurfaceEvent
         }
 
 

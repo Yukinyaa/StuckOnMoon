@@ -78,6 +78,7 @@ public class FixedIndexArray<T> : IEnumerable<T>
 
     
     public int Count => count;
+    public int MaxIndex => maxIndex;
     public int Length => array.Length;
 
     //tip: use blockcopy to add performance to copy for => don't have to I guess
@@ -124,7 +125,12 @@ public class FixedIndexArray<T> : IEnumerable<T>
 
     public IEnumerator<T> GetEnumerator()
     {
-        throw new NotImplementedException();
+        return new Enumerator(this);
+    }
+
+    public Enumerator GetCustomEnumerator()
+    {
+        return new Enumerator(this);
     }
 
     public void RemoveAt(int index)
@@ -176,34 +182,36 @@ public class FixedIndexArray<T> : IEnumerable<T>
     }
 
 
-    public class Enumerator : IEnumerator<FixedIndexArray<T>>
+    public class Enumerator : IEnumerator<T>
     {
-        FixedIndexArray<T> IEnumerator<FixedIndexArray<T>>.Current => throw new NotImplementedException();
+        
         FixedIndexArray<T> target;
 
         public Enumerator(FixedIndexArray<T> target) {
             this.target = target;
         }
 
-        int index = 0;
-        object IEnumerator.Current => throw new NotImplementedException();
+        public int Index { get; private set; } = -1;
 
-        void IDisposable.Dispose()
+        T IEnumerator<T>.Current => target.Get(Index);
+
+        public object Current => target.Get(Index);
+
+        
+        public bool MoveNext()
         {
-
-        }
-
-        bool IEnumerator.MoveNext()
-        {
-            while (!target.SafeGet(++index, out _))
-                if (index > target.maxIndex)
+            while (!target.SafeGet(++Index, out _))
+                if (Index > target.maxIndex)
                     return false;
             return true;
         }
 
-        void IEnumerator.Reset()
+        public void Reset()
         {
-            index = 0;
+            Index = 0;
+        }
+        void IDisposable.Dispose()
+        {
         }
     }
     IEnumerator IEnumerable.GetEnumerator()
