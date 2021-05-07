@@ -14,9 +14,9 @@ class EventManager : Singleton<EventManager>
     }
     public List<SurfaceEvent> PopEvents(ulong frameNo)
     {
-        var frameEvents = from ev in Events where ev.RegistedFrame == frameNo || ev.RegistedFrame == null select ev;
-        Events.RemoveWhere(ev => ev.RegistedFrame == frameNo); //todo: 날잡고 최적화 씹가능
+        var frameEvents = (from ev in Events where (ev.RegistedFrame == frameNo || ev.RegistedFrame == null) select ev).ToList();
+        Events.RemoveWhere(ev => ev.RegistedFrame == frameNo || ev.RegistedFrame == null); //todo: 날잡고 최적화 씹가능
 
-        return frameEvents.ToList();
+        return frameEvents;
     }
 }

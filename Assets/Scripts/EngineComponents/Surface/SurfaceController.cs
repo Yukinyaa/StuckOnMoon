@@ -21,7 +21,7 @@ public class SurfaceController
 
     public void RegisterEvents(List<SurfaceEvent> events)
     {
-        Debug.Assert(events.TrueForAll(a => a.RegistedFrame == UpdateManager.FrameNo));
+        Debug.Assert(events.TrueForAll(a => a.RegistedFrame == UpdateManager.FrameNo || a.RegistedFrame == null));
         sEvent = events;
         foreach (var ev in events)
         {

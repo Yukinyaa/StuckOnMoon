@@ -14,7 +14,7 @@ public class UpdateManager : Singleton<UpdateManager>
     public const int BufferCount = 4;
     public static int CurrentBuffer; //{ get; private set; }
     public static int LastBuffer;// { get; private set; }//todo re-enable for release
-    public static byte frameHash;// { get; private set; }
+    public static byte FrameHash;// { get; private set; }
     public static int? LockedFrame = null;
     public static int NextBuffer
     {
@@ -40,18 +40,16 @@ public class UpdateManager : Singleton<UpdateManager>
         PrevFrameTask?.Wait();
 
         ++FrameNo;
-        frameHash = (byte)(FrameNo % byte.MaxValue);
+        FrameHash = (byte)(FrameNo % byte.MaxValue);
         LastBuffer = CurrentBuffer;
         do
         {
             CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
-        } while (LockedFrame != CurrentBuffer);
-
-        var prepair = SurfaceManager.Instance.PrepareFrame();
+        } while (LockedFrame == CurrentBuffer);
 
         SurfaceManager.Instance.DoInput();
 
-        prepair.Wait();
+        SurfaceManager.Instance.ProcessEvents();
 
         PrevFrameTask = SurfaceManager.Instance.DoUpdate();
     }

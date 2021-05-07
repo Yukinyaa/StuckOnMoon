@@ -76,10 +76,10 @@ public class FixedIndexArray<T> : IEnumerable<T>
     #endregion
 
 
-    
-    public int Count => count;
-    public int MaxIndex => maxIndex;
-    public int Length => array.Length;
+
+    public int Count { get => count; }
+    public int MaxIndex { get => maxIndex; }
+    public int Length { get => array.Length; }
 
     //tip: use blockcopy to add performance to copy for => don't have to I guess
     public int Add(T item)

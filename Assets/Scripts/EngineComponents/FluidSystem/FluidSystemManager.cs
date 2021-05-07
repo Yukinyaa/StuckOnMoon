@@ -109,7 +109,7 @@ public class FluidSystemManager : MonoBehaviour
         {
             if(current == null) current = bodyToUpdate.Pop();
             
-            if(current.dataBuffer[CurrentBuffer].finalizedFrameno == frameHash)
+            if(current.dataBuffer[CurrentBuffer].finalizedFrameno == FrameHash)
             {
                 current = null;
                 continue;
@@ -124,7 +124,7 @@ public class FluidSystemManager : MonoBehaviour
                 for (int i = 0; i < current.neighboringPipes.Count; i++)
                     bodyToUpdate.Push(current.neighboringPipes[i]);
 
-                current.dataBuffer[CurrentBuffer].finalizedFrameno = frameHash;    
+                current.dataBuffer[CurrentBuffer].finalizedFrameno = FrameHash;    
                 current = null;
                 continue;
             }
@@ -143,7 +143,7 @@ public class FluidSystemManager : MonoBehaviour
                     desiredFlowSum += Mathf.Min((int)(pressureDelta * flowConstant), current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount);
                 }
                 //if the pressure is negative, then calculate other body first
-                else if(current.neighboringPipes[i].dataBuffer[CurrentBuffer].finalizedFrameno != frameHash)
+                else if(current.neighboringPipes[i].dataBuffer[CurrentBuffer].finalizedFrameno != FrameHash)
                 {   
                     //bodyToUpdate.Push(current); << will come here someday.
                     current = current.neighboringPipes[i];
@@ -217,7 +217,7 @@ public class FluidSystemManager : MonoBehaviour
 
             for (int i = 0; i < current.neighboringPipes.Count; i++)
                 bodyToUpdate.Push(current.neighboringPipes[i]);
-            current.dataBuffer[CurrentBuffer].finalizedFrameno = frameHash;
+            current.dataBuffer[CurrentBuffer].finalizedFrameno = FrameHash;
             current = null;
 
         }

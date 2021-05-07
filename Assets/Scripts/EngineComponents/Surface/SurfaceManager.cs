@@ -58,7 +58,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
 
         //process global event ex)chatting etc
 
-        for (int i = 0; i < surfaces.MaxIndex; ++i)
+        for (int i = 0; i <= surfaces.MaxIndex; i++)
         {
             surfaces.SafeGet(i, out var surface);
             surface.RegisterEvents(events.Where(a => a.SurfaceNo == i).ToList());
