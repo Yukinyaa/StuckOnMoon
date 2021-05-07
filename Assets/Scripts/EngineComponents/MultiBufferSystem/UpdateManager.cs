@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections;
+using System.Threading.Tasks;
 
 public class UpdateManager : Singleton<UpdateManager>
 {
@@ -25,14 +26,23 @@ public class UpdateManager : Singleton<UpdateManager>
         CurrentBuffer = 1;
     }
 
+    Task PrevFrameTask = null;
     // Update is called once per frame
     void Update()
     {
+        PrevFrameTask?.Wait();
+
         ++FrameNo;
         frameHash = (byte)(FrameNo % byte.MaxValue);
         LastBuffer = CurrentBuffer;
         CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
 
-        SurfaceManager.Instance.DoUpdate();
+        var prepair = SurfaceManager.Instance.PrepareFrame();
+
+        SurfaceManager.Instance.DoInput();
+
+        prepair.Wait();
+
+        PrevFrameTask = SurfaceManager.Instance.DoUpdate();
     }
 }

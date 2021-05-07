@@ -19,7 +19,7 @@ public delegate void ModAction<T>(ref T target);
 
 
 //todo: serialize, deserialize
-public class FixedIndexArray<T>
+public class FixedIndexArray<T> : IEnumerable<T>
 {
 
     int firstFreeIndex = -1;// first free index, fifo
@@ -173,5 +173,41 @@ public class FixedIndexArray<T>
                     return true;
         }
         return false;
+    }
+
+
+    public class Enumerator : IEnumerator<FixedIndexArray<T>>
+    {
+        FixedIndexArray<T> IEnumerator<FixedIndexArray<T>>.Current => throw new NotImplementedException();
+        FixedIndexArray<T> target;
+
+        public Enumerator(FixedIndexArray<T> target) {
+            this.target = target;
+        }
+
+        int index = 0;
+        object IEnumerator.Current => throw new NotImplementedException();
+
+        void IDisposable.Dispose()
+        {
+
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            while (!target.SafeGet(++index, out _))
+                if (index > target.maxIndex)
+                    return false;
+            return true;
+        }
+
+        void IEnumerator.Reset()
+        {
+            index = 0;
+        }
+    }
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return new Enumerator(this);
     }
 }

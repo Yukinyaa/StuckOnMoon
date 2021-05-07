@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Collections;
 using Unity.Mathematics;
+using System.Threading.Tasks;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -41,9 +43,13 @@ public class SurfaceManager : Singleton<SurfaceManager>
             new SurfaceController();
         }
     }
-    public void PrepareFrame()
+    public Task PrepareFrame()
     {
-        surfaces.ForEach(s => s.PrepareFrame());
+        return Task.Factory.StartNew( () =>
+        {
+            var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.PrepareFrame(); });
+            Task.WaitAll( tasks.ToArray() );
+        });
     }
     // Update is called once per frame
     public void DoUpdate()
@@ -51,7 +57,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
         DoInput();
         DoRender();
     }
-    void DoInput()
+    public void DoInput()
     {
         if (Input.GetKeyDown(KeyCode.Alpha0))
         {
@@ -93,7 +99,8 @@ public class SurfaceManager : Singleton<SurfaceManager>
 
             SurfaceEvent placeObjEvent =  new SurfacePlaceObjectEvent(viewingSurface, objectOnHand, posArgumentedInt2);
 
-            ViewingSurface.chunkController.CanPlaceObject(posArgumentedInt2, objectOnHand);
+            EventManager.Instance.RegisterEvent(placeObjEvent);
+            //ViewingSurface.chunkController.CanPlaceObject(posArgumentedInt2, objectOnHand);
 
             SurfaceObject newObject = new SurfaceObject(posArgumentedInt2, objectOnHand);
             //int newObjectIndex = 

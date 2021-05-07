@@ -10,7 +10,7 @@ public class SurfaceEventComparerByFrame : IComparer<SurfaceEvent>
 
 public class SurfaceEvent
 {
-    public SurfaceEvent(int surfaceNo,  int? issuedUID = null, ulong ? registedFrame = null)
+    public SurfaceEvent(int surfaceNo,  int? issuedUID = null, ulong? registedFrame = null )
     {
         this.RegistedFrame = registedFrame ?? UpdateManager.FrameNo;
         this.IssuedUID = issuedUID ?? 0;//todo : multiplayerManager.myUID or sth like that
@@ -19,7 +19,7 @@ public class SurfaceEvent
     //
 
 
-    public ulong RegistedFrame { get; private set; }
+    public ulong? RegistedFrame { get; private set; }
     public int IssuedUID { get; protected set; }
     public int SurfaceNo { get; protected set; }
 }
