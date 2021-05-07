@@ -100,7 +100,7 @@ public class SurfaceChunkController
         {
             for (int yChunk = addObj.MinY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
             {
-                if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk % xChunkCount, yChunk].Current.Exists(obj => obj.IsCollideWith(addObj)))
+                if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk % xChunkCount, yChunk].Current.Exists(obj => sObjects.GetCurrent(obj).IsCollideWith(addObj)))
                     return false;
             }
         }

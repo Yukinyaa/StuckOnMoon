@@ -14,12 +14,12 @@ public class SurfaceController
     List<SurfaceEvent> sEvent;
     public void RegisterEvents(List<SurfaceEvent> @event)
     {
-        Debug.Assert(@event.TrueForAll(a => a.RegistedFrame == UpdateManager.frameNo));
-            sEvent = @event;
+        Debug.Assert(@event.TrueForAll(a => a.RegistedFrame == UpdateManager.FrameNo));
+        sEvent = @event;
     }
     public SurfaceController()
     {
-        CreatedAt = UpdateManager.frameNo;
+        CreatedAt = UpdateManager.FrameNo;
         surfaceObejcts = new BufferedFixedIndexArray<SurfaceObject>();
         chunkController = new SurfaceChunkController(surfaceObejcts);
     }

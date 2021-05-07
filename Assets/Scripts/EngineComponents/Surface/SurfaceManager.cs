@@ -28,17 +28,22 @@ public class SurfaceManager : Singleton<SurfaceManager>
     private bool isDrawBlockGizmoEnabled;
 #endif
     int currentSurface = 0;
+    SurfaceController CurrentSurface => surfaces.SafeGet(currentSurface);
     int viewingSurface = 0;
-    private void Awake()
+    SurfaceController ViewingSurface => surfaces.SafeGet(viewingSurface);
+    protected override void Awake()
     {
-        SObjectTypes.Init();//move elsewhere
-        surfaces = FixedIndexArray<SurfaceController>();
-        new SurfaceController();
-
+        base.Awake();
+        {//prepair
+            SObjectTypes.Init();//move elsewhere
+            surfaces = new FixedIndexArray<SurfaceController>();
+            surfaces.Add(new SurfaceController());
+            new SurfaceController();
+        }
     }
     public void PrepareFrame()
     {
-        surface.PrepareFrame();
+        surfaces.ForEach(s => s.PrepareFrame());
     }
     // Update is called once per frame
     public void DoUpdate()
@@ -84,14 +89,17 @@ public class SurfaceManager : Singleton<SurfaceManager>
         if (Input.GetKey(placeKeyCode))
         {
             int2 posArgumentedInt2 = new int2(posArgumented);
-            while (posArgumentedInt2.x < 0) posArgumentedInt2.x += surface.chunkController.mapWidth;
-            surface.chunkController.CanPlaceObject(posArgumentedInt2, objectOnHand);
+            while (posArgumentedInt2.x < 0) posArgumentedInt2.x += ViewingSurface.chunkController.mapWidth;
+
+            SurfaceEvent placeObjEvent =  new SurfacePlaceObjectEvent(viewingSurface, objectOnHand, posArgumentedInt2);
+
+            ViewingSurface.chunkController.CanPlaceObject(posArgumentedInt2, objectOnHand);
 
             SurfaceObject newObject = new SurfaceObject(posArgumentedInt2, objectOnHand);
-            int newObjectIndex = surface
-            surface.chunkController.RegisterObject(posArgumentedInt2, objectOnHand);
+            //int newObjectIndex = 
+            //surface.chunkController.RegisterObject(posArgumentedInt2, objectOnHand);
 
-            SurfaceEvent
+            //SurfaceEvent
         }
 
 
@@ -119,7 +127,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
                 {
                     
                     DebugExtension.DrawPoint(new Vector3(gridOffset.x + gridSize.x * x, gridOffset.y + gridSize.y * y));
-                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+surface?.chunkController.mapWidth:x)},{y}", GUIStyle.none);
+                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+ surfaces?.SafeGet(viewingSurface).chunkController.mapWidth:x)},{y}", GUIStyle.none);
                 }
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(gridSize.x, 0), Color.red);
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, gridSize.y), Color.green);
@@ -129,13 +137,11 @@ public class SurfaceManager : Singleton<SurfaceManager>
         if (isDrawBlockGizmoEnabled)
         {
             //surface1?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), SObjectTypes.sObjectTypes[o.objectType].name));// o.objectType.ToString()
-            surface?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
-            surface?.chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
+            surfaces?.SafeGet(viewingSurface).chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
+            surfaces?.SafeGet(viewingSurface).chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
                                 new Bounds(o.Middle, new Vector2(o.shape.size.x, o.shape.size.y))
                     ));// o.objectType.ToString()
         }
-        
-
 #endif
     }
 }

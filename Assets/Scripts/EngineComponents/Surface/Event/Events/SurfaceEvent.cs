@@ -1,9 +1,18 @@
-﻿public class SurfaceEvent
+﻿using System.Collections.Generic;
+
+public class SurfaceEventComparerByFrame : IComparer<SurfaceEvent>
 {
-    public SurfaceEvent(int surfaceNo,  ulong? registedFrame = null, int? issuedUID = null)
+    int IComparer<SurfaceEvent>.Compare(SurfaceEvent x, SurfaceEvent y)
     {
-        
-        this.RegistedFrame = registedFrame ?? UpdateManager.frameNo;
+        return (int)(x.RegistedFrame - y.RegistedFrame);
+    }
+}
+
+public class SurfaceEvent
+{
+    public SurfaceEvent(int surfaceNo,  int? issuedUID = null, ulong ? registedFrame = null)
+    {
+        this.RegistedFrame = registedFrame ?? UpdateManager.FrameNo;
         this.IssuedUID = issuedUID ?? 0;//todo : multiplayerManager.myUID or sth like that
         this.SurfaceNo = surfaceNo;
     }

@@ -8,10 +8,12 @@ using Unity.Mathematics;
 class SurfacePlaceObjectEvent : SurfaceEvent
 {
     public int blockType { get; protected set; }
+    public int blockState { get; protected set; }
     public int2 position { get; protected set; }//minX basically
 
 
-    public SurfacePlaceObjectEvent(int blockType, int2 position, ulong? registedFrame = null, int? issuedUID = null) : base(registedFrame, issuedUID)
+    public SurfacePlaceObjectEvent(int surfaceNo, int blockType, int2 position, int? issuedUID = null, ulong? registedFrame = null) 
+        : base(surfaceNo, issuedUID, registedFrame)
     {
         this.blockType = blockType;
         this.position = position;

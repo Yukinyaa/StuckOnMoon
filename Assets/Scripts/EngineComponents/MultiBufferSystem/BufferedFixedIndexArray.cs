@@ -27,7 +27,7 @@ public class BufferedFixedIndexArray<T>
     public ulong createdTime { get; private set; }
     public BufferedFixedIndexArray()
     {
-        createdTime = UpdateManager.Instance.frameNo;
+        createdTime = UpdateManager.FrameNo;
         for (int i = 0; i < BufferCount; i++)
         {
             arrays[i] = new FixedIndexArray<T>();

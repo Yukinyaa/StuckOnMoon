@@ -14,7 +14,10 @@ public class UpdateManager : Singleton<UpdateManager>
     public static int CurrentBuffer; //{ get; private set; }
     public static int LastBuffer;// { get; private set; }//todo re-enable for release
     public static byte frameHash;// { get; private set; }
-    public static ulong frameNo { get; private set; } = 0;
+    public static ulong FrameNo { get; private set; } = 0;
+    public static ulong UpdatingFrame => FrameNo;
+    public static ulong LastFrame => FrameNo - 1;
+    public static ulong NextFrame => FrameNo + 1;
 
     void Init()
     {
@@ -25,10 +28,11 @@ public class UpdateManager : Singleton<UpdateManager>
     // Update is called once per frame
     void Update()
     {
-        ++frameNo;
-        frameHash = (byte)(frameNo % byte.MaxValue);
+        ++FrameNo;
+        frameHash = (byte)(FrameNo % byte.MaxValue);
         LastBuffer = CurrentBuffer;
         CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
+
         SurfaceManager.Instance.DoUpdate();
     }
 }
