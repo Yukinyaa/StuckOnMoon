@@ -7,77 +7,86 @@ using System.Linq;
 using System.Collections;
 using static UpdateManager;
 
-public class FluidSystemManager : MonoBehaviour
+public class FluidSystem
 {
-    List<Fluidbody> fBodies;
-    List<Fluidbody> endPoints;
-    // Use this for initialization
-    void Start()
-    {
-        fBodies = FindObjectsOfType<Fluidbody>().ToList();
-        endPoints = fBodies.FindAll(f => f.neighboringPipes.Count == 1);
-    }
-
-    int fluidDensity = 10; // water = 10
+    BufferedFixedIndexArray<Fluidbody> fBodies;
+    public const int MaxNeghbors = 32;
+    
+    
+    public int fluidDensity = 10; // water = 10
     public float fluidViscocity = 1f;//todo : to int
     public float flowConstant = 1f; //todo: to int
-
-    [Tooltip("Higher the rate, slower the rate change")]
+    
     public int flowRateDecayRate = 5;
     // Update is called once per frame
-    void Update()
+
+
+
+    public void CopyToNextFrame()
     {
-        Fluidbody minPressureBody = null;
-        foreach (Fluidbody body in fBodies)
+        fBodies.CopyToNext();
+    }
+    // Use this for initialization
+
+
+    public void Update()
+    {
+        int minPressureBody = -1;
+        int minPressure = -1;
+        for (int i = 0; i < fBodies.Current.MaxIndex; i++)
         {
-            body.dataBuffer[CurrentBuffer].amount = body.dataBuffer[LastBuffer].amount;
-            body.dataBuffer[CurrentBuffer].pressure 
-                = fluidDensity * body.dataBuffer[LastBuffer].amount * body.height / body.maxamount;//head pressure
-            body.dataBuffer[CurrentBuffer].flowAmount = 0;
-            body.dataBuffer[CurrentBuffer].avgflowRate = (body.dataBuffer[LastBuffer].avgflowRate * (flowRateDecayRate - 1) + body.dataBuffer[LastBuffer].flowAmount) / flowRateDecayRate;
+            if (!fBodies.SafeGetCurrent(i, out Fluidbody body))
+                continue;
 
-            if (body.dataBuffer[CurrentBuffer].amount >= body.maxamount)
+            fBodies.SafeGetLast(i, out Fluidbody lastBody);
+
+            body.pressure = fluidDensity * lastBody.amount * body.height / body.maxamount;//head pressure
+            body.flowAmount = 0;
+            body.avgflowRate = (lastBody.avgflowRate * (flowRateDecayRate - 1) + lastBody.flowAmount) / flowRateDecayRate;
+
+            if (body.amount >= body.maxamount)
             {
-                for (int i = 0; i < body.neighboringPipes.Count; i++)//todo: (주변 파이프압 - 마찰)중 최댓값 도입
+                for (int neg = 0; neg < MaxNeghbors; neg++)//todo: (주변 파이프압 - 마찰)중 최댓값 도입
                 {
+                    if (body.neighboringPipes[neg] == -1) continue;
+                    Fluidbody neighbor = fBodies.GetCurrent(body.neighboringPipes[neg]);
                     // 파이프 마찰 계산
-                    int pressure = (int)(body.neighboringPipes[i].dataBuffer[LastBuffer].pressure
-                        + fluidDensity * (body.neighboringPipes[i].elevation - body.elevation)// reflect elevation delta
-                        - fluidViscocity * body.neighboringPipes[i].length * body.neighboringPipes[i].dataBuffer[LastBuffer].avgflowRate / body.neighboringPipes[i].radius
-                        - fluidViscocity * body.length * body.dataBuffer[LastBuffer].avgflowRate / body.radius);//todo: viscocity to int
+                    int pressure = (int)(neighbor.pressure
+                        + fluidDensity * (neighbor.elevation - body.elevation)// reflect elevation delta
+                        - fluidViscocity * neighbor.length * lastBody.avgflowRate / body.radius
+                        - fluidViscocity * body.length * lastBody.avgflowRate / body.radius);//todo: viscocity to int
 
-                    /*
-                    if (body.dataBuffer[CurrentBuffer].amount < body.maxamount)
-                        pressure = pressure * body.dataBuffer[CurrentBuffer].amount / body.maxamount;
-                        */
-
-                    if (pressure > body.dataBuffer[CurrentBuffer].pressure)
+                    if (pressure > body.pressure)
                     {
-                        body.dataBuffer[CurrentBuffer].pressure = pressure;
+                        body.pressure = pressure;
                     }
                 }
             }
-            if (minPressureBody == null)
+            if (minPressureBody == -1)
             {
-                minPressureBody = body;
+                minPressureBody = i;
             }
-            else if (body.dataBuffer[CurrentBuffer].pressure < minPressureBody.dataBuffer[CurrentBuffer].pressure)
+            else if (body.pressure < minPressure)
             {
-                minPressureBody = body;
+                minPressureBody = i;
+                minPressure = body.pressure;
             }
+            fBodies.Current.Set(i, body); // ★Important★★★★★★★★★★★★
         }
 
 
-        if (minPressureBody == null) return;//no entry, nothing to update
+        if (minPressureBody == -1) return;//no entry, nothing to update
 
 
 #if DEBUG_FLUID_VERBOSE
         string s = "";
         int sum = 0;
-        foreach (Fluidbody f in fBodies)
+        for (int i = 0; i < fBodies.Current.MaxIndex; i++)
         {
-            s += $"\n{f.name}:({f.dataBuffer[CurrentBuffer].amount}/{f.maxamount}), p: {f.dataBuffer[CurrentBuffer].pressure}, fr: {f.dataBuffer[CurrentBuffer].flowAmount}";
-            sum += f.dataBuffer[CurrentBuffer].amount;
+            if (!fBodies.SafeGetCurrent(i, out Fluidbody f))
+                continue;
+            s += $"\n:({f.amount}/{f.maxamount}), p: {f.pressure}, fr: {f.flowAmount}";
+            sum += f.amount;
         }
         Debug.Log(s);
         Debug.Log($"sum of fluid: {sum}");
@@ -92,134 +101,152 @@ public class FluidSystemManager : MonoBehaviour
     /// 
     /// * taking recursive approach.
     ///  - calculate relative pressure to neghbors.
-    ///   - if the pressure is negative(flowing *to* neghbor), flow neghbor node first(if not already calculated).
+    ///   - if the pressure is negative(flowing *to* neghbor), calculate neghbor node first(if not already calculated).
     ///   - if the pressure is positive, take fluid from neghbors.
-    /// * taking 
+    ///     - if the sum of taking is greater then full tank, take from max fluid flow.
     /// 
     /// </summary>
     /// <param name="startPoint"></param>
-    void FlowFluid_Cascade(Fluidbody startPoint)
+    void FlowFluid_Cascade(int startPoint)
     {
-        Stack<Fluidbody> bodyToUpdate = new Stack<Fluidbody>();
+        Stack<int> bodyToUpdate = new Stack<int>();
         int a = CurrentBuffer;
-
-        Fluidbody current = startPoint;
+        int[] desiredFlowRate = new int[MaxNeghbors];
+        int current = startPoint;
         //bodyToUpdate.Push(startPoint);
-        while (bodyToUpdate.Count != 0 || current != null )
+        while (bodyToUpdate.Count != 0)
         {
-            if(current == null) current = bodyToUpdate.Pop();
+            if(current == -1) current = bodyToUpdate.Pop();
+
+#if DEBUG
+            if (!fBodies.SafeGetCurrent(current, out Fluidbody currentBody))
+                throw new System.Exception("Fucking Idiot");
+#else
+            Fluidbody currentBody = fBodies.GetCurrent(current));
             
-            if(current.dataBuffer[CurrentBuffer].finalizedFrameno == FrameHash)
+#endif
+
+            if (currentBody.finalizedFrame == FrameHash)
             {
-                current = null;
+                current = -1;
                 continue;
             }
                 
-
-
             //body.dataBuffer[CurrentBuffer].amount
             int desiredFlowSum = 0;
-            if (current.dataBuffer[CurrentBuffer].amount == current.maxamount)
+            if (currentBody.amount == currentBody.maxamount)
             {
-                for (int i = 0; i < current.neighboringPipes.Count; i++)
-                    bodyToUpdate.Push(current.neighboringPipes[i]);
 
-                current.dataBuffer[CurrentBuffer].finalizedFrameno = FrameHash;    
-                current = null;
+                for (int neg = 0; neg < MaxNeghbors; neg++)
+                {
+                    if (currentBody.neighboringPipes[neg] == -1) continue;
+                    bodyToUpdate.Push(currentBody.neighboringPipes[neg]);
+                }
+
+                currentBody.finalizedFrame = FrameHash;
+                current = -1;
                 continue;
             }
-            bool doContinue = false;
-            for (int i = 0; i < current.neighboringPipes.Count; i++)
+            //bool doContinue = false;
+            for (int neg = 0; neg < MaxNeghbors; neg++)
             {
-                //if delta is positive, pressure is headed towards this node.
-                int pressureDelta = 
-                    current.neighboringPipes[i].dataBuffer[CurrentBuffer].pressure - current.dataBuffer[CurrentBuffer].pressure
-                    + fluidDensity * (current.neighboringPipes[i].elevation - current.elevation);
+                if (currentBody.neighboringPipes[neg] == -1) continue;
 
+                //if delta is positive, pressure is headed towards this node.
+                int pressureDelta =
+                    fBodies.Current.Get(currentBody.neighboringPipes[neg]).pressure - currentBody.pressure
+                    + fluidDensity * (fBodies.Current.Get(currentBody.neighboringPipes[neg]).pressure - currentBody.elevation);
+                
                 //if flowing to this node
                 if (pressureDelta >= 0)
                 { 
                     //then add flow to sum flow
-                    desiredFlowSum += Mathf.Min((int)(pressureDelta * flowConstant), current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount);
+                    desiredFlowSum += (desiredFlowRate[neg] = Mathf.Min((int)(pressureDelta * flowConstant), fBodies.Current.Get(currentBody.neighboringPipes[neg]).amount));
                 }
                 //if the pressure is negative, then calculate other body first
-                else if(current.neighboringPipes[i].dataBuffer[CurrentBuffer].finalizedFrameno != FrameHash)
+                else if(fBodies.Current.Get(currentBody.neighboringPipes[neg]).finalizedFrame != FrameHash)
                 {   
                     //bodyToUpdate.Push(current); << will come here someday.
-                    current = current.neighboringPipes[i];
-                    doContinue = true;
-                    break;
-                }
-
-            }
-            if(doContinue) continue;
-
-            if (desiredFlowSum + current.dataBuffer[CurrentBuffer].amount < current.maxamount)
-            {
-                current.dataBuffer[CurrentBuffer].amount += desiredFlowSum;
-                current.dataBuffer[CurrentBuffer].flowAmount += desiredFlowSum;
-
-                for (int i = 0; i < current.neighboringPipes.Count; i++)
-                {
-                    if (current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount == 0)
-                        continue;
-
-                    int pressureDelta =
-                        current.neighboringPipes[i].dataBuffer[CurrentBuffer].pressure - current.dataBuffer[CurrentBuffer].pressure
-                        + fluidDensity * (current.neighboringPipes[i].elevation - current.elevation);
                     
-                    if (pressureDelta > 0)
+                    current = neg;
+                    //doContinue = true;
+                    //break;
+                    goto Cotinue;
+                }
+            }
+            if (false)//doContinue
+            {
+                continue;
+            }
+
+            // case when currentbody will not be full (or be exactly full)
+            if (desiredFlowSum + currentBody.amount <= currentBody.maxamount)
+            {
+                currentBody.amount += desiredFlowSum;
+                currentBody.flowAmount += desiredFlowSum;
+                
+
+                for (int neg = 0; neg < MaxNeghbors; neg++)
+                {
+                    if (desiredFlowRate[neg] == 0) continue;
+                    //if (currentBody.neighboringPipes[neg] == -1) continue;
+
+                    int flowAmount = desiredFlowRate[neg];
+
+
+                    if (flowAmount > 0)
                     {
-                        int flowAmount = Mathf.Min((int)(pressureDelta * flowConstant), current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount);
-
-#if DEBUG_FLUID_VERBOSE
-                        Debug.Log($"Flow : {current.neighboringPipes[i].name} -> {current.name} : {flowAmount}");
-#endif
-
-                        current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount -= flowAmount;
-                        current.neighboringPipes[i].dataBuffer[CurrentBuffer].flowAmount += flowAmount;
+                        var negbody = fBodies.Current.Get(currentBody.neighboringPipes[neg]);
+                        negbody.amount -= flowAmount;
+                        negbody.flowAmount += flowAmount;
+                        fBodies.Current.Set(currentBody.neighboringPipes[neg], negbody);
                     }
                 }
             }
+            // case when currentbody will be full
             else
             {
-                int actualFlowSum = current.maxamount - current.dataBuffer[CurrentBuffer].amount;
-                current.dataBuffer[CurrentBuffer].flowAmount += actualFlowSum;
-                current.dataBuffer[CurrentBuffer].amount = current.maxamount;
+                int actualFlowSum = currentBody.maxamount - currentBody.amount;
+                currentBody.flowAmount += actualFlowSum;
+                currentBody.amount = currentBody.maxamount;
 
-                int flowAmountSum = 0;
-                for (int i = 0; i < current.neighboringPipes.Count; i++)
+
+                int breakCounter = 0;
+                for ( ; ; )
                 {
-                    if (current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount == 0)
-                        continue;
+                    var (maxFlowRate, maxIndex) = desiredFlowRate.Select((n, i) => (n, i)).Max();//todo: Optimise, this is shit code;
 
-                    int pressureDelta =
-                        current.neighboringPipes[i].dataBuffer[CurrentBuffer].pressure - current.dataBuffer[CurrentBuffer].pressure
-                        + fluidDensity * (current.neighboringPipes[i].elevation - current.elevation);
-                    
-                    if (pressureDelta > 0)//todo: flow from only max 
-                    {
-                        int flowAmount = Mathf.Min((int)(pressureDelta * flowConstant), current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount) * actualFlowSum / desiredFlowSum ;
+                    if (maxFlowRate == 0)
+                        throw new System.Exception("U R fucking Idiot");
 
-                        if (i + 1 != current.neighboringPipes.Count)
-                            flowAmountSum += flowAmount;    
-                        else
-                            flowAmount = actualFlowSum - flowAmountSum;
+                    desiredFlowRate[maxIndex] = 0;
 
-#if DEBUG_FLUID_VERBOSE
-                        Debug.Log($"Flow : {current.neighboringPipes[i].name} -> {current.name} : {flowAmount}");
-#endif
-                        current.neighboringPipes[i].dataBuffer[CurrentBuffer].amount -= flowAmount;
-                        current.neighboringPipes[i].dataBuffer[CurrentBuffer].flowAmount += flowAmount;
-                    }
+                    maxFlowRate = Mathf.Min(actualFlowSum, maxIndex);
+
+                    actualFlowSum -= maxFlowRate;
+
+                    var negbody = fBodies.Current.Get(currentBody.neighboringPipes[maxIndex]);
+                    negbody.amount -= maxFlowRate;
+                    negbody.flowAmount += maxFlowRate;
+                    fBodies.Current.Set(currentBody.neighboringPipes[maxIndex], negbody);
+
+                    if (actualFlowSum == 0) break;
+
+                    ++breakCounter;
+                    if (breakCounter > FluidSystem.MaxNeghbors) break;
                 }
             }
 
-            for (int i = 0; i < current.neighboringPipes.Count; i++)
-                bodyToUpdate.Push(current.neighboringPipes[i]);
-            current.dataBuffer[CurrentBuffer].finalizedFrameno = FrameHash;
-            current = null;
+            for (int neg = 0; neg < MaxNeghbors; neg++)
+            {
+                if (currentBody.neighboringPipes[neg] == -1) continue;
+                bodyToUpdate.Push(currentBody.neighboringPipes[neg]);
+            }
+            currentBody.finalizedFrame = FrameHash;
 
+            fBodies.Current.Set(current, currentBody);
+            current = -1;
+        Cotinue: continue;
         }
 
 

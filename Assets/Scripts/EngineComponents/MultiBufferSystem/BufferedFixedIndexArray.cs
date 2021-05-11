@@ -9,14 +9,27 @@ public class BufferedFixedIndexArray<T>
 {
     FixedIndexArray<T>[] arrays = new FixedIndexArray<T>[UpdateManager.BufferCount];
     #region get/setters
+    
     public T GetCurrent(int index)
     {
         return arrays[CurrentBuffer].Get(index);
     }
+    public bool SafeGetCurrent(int index, out T data)
+    {
+        return arrays[CurrentBuffer].SafeGet(index, out data);
+    }
+
     public T GetLast(int index)
     {
         return arrays[LastBuffer].Get(index);
     }
+
+    public bool SafeGetLast(int index, out T data)
+    {
+        return arrays[LastBuffer].SafeGet(index, out data);
+    }
+
+
     public void CopyLast()
     {
         Last.CopyTo(Current);
@@ -27,6 +40,7 @@ public class BufferedFixedIndexArray<T>
     }
     public FixedIndexArray<T> Current { get => arrays[CurrentBuffer]; }
     public FixedIndexArray<T> Last { get => arrays[LastBuffer]; }
+
     public FixedIndexArray<T> Next { get => arrays[NextBuffer]; }
     #endregion
     public ulong createdTime { get; private set; }
