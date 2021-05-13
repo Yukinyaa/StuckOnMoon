@@ -37,17 +37,19 @@ public class UpdateManager : Singleton<UpdateManager>
     // Update is called once per frame
     void Update()
     {
+        InputManager.Instance.DoInput();
+
         PrevFrameTask?.Wait();
 
         ++FrameNo;
         FrameHash = (byte)(FrameNo % byte.MaxValue);
         LastBuffer = CurrentBuffer;
+
         do
         {
             CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
         } while (LockedFrame == CurrentBuffer);
 
-        SurfaceManager.Instance.DoInput();
 
         SurfaceManager.Instance.ProcessEvents();
 

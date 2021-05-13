@@ -15,7 +15,7 @@ public class FluidSystem
     
     public int fluidDensity = 10; // water = 10
     public float fluidViscocity = 1f;//todo : to int
-    public float flowConstant = 1f; //todo: to int
+    public float flowConstant = 1f; // todo: to int
     
     public int flowRateDecayRate = 5;
     // Update is called once per frame

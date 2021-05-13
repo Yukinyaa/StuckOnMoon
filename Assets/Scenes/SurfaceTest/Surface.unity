@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 933988770}
   - component: {fileID: 933988772}
   - component: {fileID: 933988773}
+  - component: {fileID: 933988774}
   m_Layer: 0
   m_Name: SurfaceControllers
   m_TagString: Untagged
@@ -154,10 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92a8781f8c5567442bfc134ca3a0d2f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  placeKeyCode: 323
   gridOffset: {x: 0, y: 0, z: 0}
   gridSize: {x: 1, y: 1, z: 1}
-  objectOnHand: 4
   isDrawGridGizmoEnabled: 1
   isDrawBlockGizmoEnabled: 1
 --- !u!4 &933988771
@@ -198,6 +197,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0b2eb2dd33b06d4eb56089a6f61bb64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &933988774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933988769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26676dd356b1b3f459d13ea5a6e31d00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placeKeyCode: 323
+  objectOnHand: 0
 --- !u!1 &1541983039
 GameObject:
   m_ObjectHideFlags: 0

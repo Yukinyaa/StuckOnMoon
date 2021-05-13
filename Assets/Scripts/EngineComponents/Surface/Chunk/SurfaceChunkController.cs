@@ -20,11 +20,13 @@ public class SurfaceChunkController
     public int xChunkCount;
     public int lastXChunkWidth;
     public string name = "nauvis";
+    public float2 gridSize = new float2(0.5f, 0.5f);
 
 
+
+    public bool IsViewed { get; private set; }
 
     
-    public Vector2 gridSize = new Vector2(1, 1);
     public void PrepareNextFrame()
     {
         
@@ -32,6 +34,31 @@ public class SurfaceChunkController
         {
             a?.CopyToNext();
         }
+    }
+
+    public void SetViewport(int2 bottmLeft, int2 topRight)
+    {
+        ArgumentVectorPair(ref bottmLeft, ref topRight);
+
+        int maxXChunk = bottmLeft.x / chunkSize;
+        if (topRight.x > 4200)
+            maxXChunk = (topRight.x - 4200) / chunkSize + xChunkCount;
+
+        int maxYChunk = topRight.y / chunkSize;
+    }
+    // Euclidian mod.
+    int EucMod(int k, int n) { return ((k %= n) < 0) ? k + n : k; }
+
+    /// <summary>
+    /// input: min/max pair of arbiraty points
+    /// modify to match argmin>argmax, argmin/argmax.x > 0
+    /// </summary>
+    public void ArgumentVectorPair(ref int2 argMin,ref int2 argMax)
+    {
+        argMin.x = EucMod(argMin.x, mapWidth);
+        argMax.x = EucMod(argMax.x, mapWidth);
+        if (argMin.x > argMax.x)
+            argMax.x += mapWidth;
     }
 
     BufferedFixedIndexArray<int>[,] chunks;
@@ -60,15 +87,16 @@ public class SurfaceChunkController
         if (CanPlaceObject(addObj) == false)
             return false;
 
-
         int maxXChunk = addObj.MaxX / chunkSize;
         if (addObj.MaxX > 4200)
             maxXChunk = (addObj.MaxX - 4200) / chunkSize + xChunkCount;
 
+        int maxYChunk = addObj.MaxY / chunkSize;
+
 
         for (int xChunk = addObj.MinX / chunkSize; xChunk <= maxXChunk; ++xChunk)
         { 
-            for (int yChunk = addObj.MinY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
+            for (int yChunk = addObj.MinY / chunkSize; yChunk <= maxYChunk / chunkSize; ++yChunk)
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null)
                     chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<int>();
