@@ -2,7 +2,7 @@
     "name": "InputBindings",
     "maps": [
         {
-            "name": "Move",
+            "name": "Game",
             "id": "9c407524-1f4f-4ff6-9484-417e30244fe2",
             "actions": [
                 {
@@ -10,6 +10,30 @@
                     "type": "Value",
                     "id": "760d1177-e536-4dbd-9bcd-5d306790d1a0",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "1871146f-632a-485f-9bca-de6e04eda08e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Place Block",
+                    "type": "Button",
+                    "id": "9e24a4c0-4188-4e94-b8ed-4d4e9205bd9b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Empty Hand",
+                    "type": "PassThrough",
+                    "id": "ee900350-41f2-4585-a4da-ee1ed108166d",
+                    "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
                 }
@@ -80,6 +104,180 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "75445e2f-ce64-41e0-88f5-0ba033d8e446",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Place Block",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "68d89c63-d0a9-4341-a61c-71670f284a04",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Empty Hand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4ae969aa-0206-4fca-9d01-a13e30b43c51",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Quickbar",
+            "id": "b74c7294-b5a8-450e-b6ec-9b34edea749e",
+            "actions": [
+                {
+                    "name": "Quickbar 1",
+                    "type": "Button",
+                    "id": "144b0dc3-ceb8-4e30-831a-2d112dc50bba",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Quickbar 2",
+                    "type": "Button",
+                    "id": "11626f37-03a8-48bc-bd65-2455743cefa9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Quickbar 3",
+                    "type": "Button",
+                    "id": "b81fe624-2931-457d-8df0-2f97d6763734",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Quickbar 4",
+                    "type": "Button",
+                    "id": "6b98fbfc-e8a7-4101-a34a-85c3c43601a1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Quickbar 5",
+                    "type": "Button",
+                    "id": "e4a0f1a1-ca07-4b64-90d4-63d397f8fbfb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Quickbar 6",
+                    "type": "Button",
+                    "id": "c9adb2c3-3396-4d92-b666-724929fa8e99",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Quickbar 7",
+                    "type": "Button",
+                    "id": "049f8a0b-ebc3-47a4-a0cf-8cc5fa22c2c6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "108e51c7-0163-45e0-be68-e74950bc061c",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 1",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1de92d54-2642-46d2-92de-01d4bae9965e",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d639268f-7a2b-4176-b510-26345557f627",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 3",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "861416e6-645b-4647-893b-a43c26899dc4",
+                    "path": "<Keyboard>/4",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d0462a0-80b1-4709-89f1-cce0fe439b3f",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 5",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3c5736a2-d3f0-46fb-bae0-9bf6b0a908ac",
+                    "path": "<Keyboard>/6",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 6",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fda719ec-c8a6-4b75-8859-294e20cb0149",
+                    "path": "<Keyboard>/7",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quickbar 7",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

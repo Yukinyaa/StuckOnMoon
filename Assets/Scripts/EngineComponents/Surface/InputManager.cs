@@ -61,7 +61,7 @@ class InputManager : Singleton<InputManager>
                 posArgumentedInt2.x += SurfaceManager.Instance.ViewingSurface.chunkController.mapWidth;
 
             SurfaceEvent placeObjEvent = 
-                new SurfacePlaceObjectEvent(SurfaceManager.Instance.ViewingSurfaceNo, objectOnHand, posArgumentedInt2);
+                new SurfacePlaceObjectEvent(SurfaceManager.Instance.ViewingSurfaceNo ?? SurfaceManager.Instance.CurrentSurfaceNo, objectOnHand, posArgumentedInt2);
 
             EventManager.Instance.RegisterEvent(placeObjEvent);
         }

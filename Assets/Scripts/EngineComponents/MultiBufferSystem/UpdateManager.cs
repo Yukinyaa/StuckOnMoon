@@ -54,5 +54,9 @@ public class UpdateManager : Singleton<UpdateManager>
         SurfaceManager.Instance.ProcessEvents();
 
         PrevFrameTask = SurfaceManager.Instance.DoUpdate();
+
+        SurfaceManager.PrepairRender();
+
+
     }
 }

@@ -1,4 +1,4 @@
-﻿#define DEBUG_FLUID_VERBOSE
+﻿//#define DEBUG_FLUID_VERBOSE
 
 
 using UnityEngine;

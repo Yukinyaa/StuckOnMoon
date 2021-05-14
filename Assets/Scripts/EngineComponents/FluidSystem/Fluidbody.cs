@@ -21,14 +21,16 @@ public struct Fluidbody
             neighboringPipes[i] = -1;
         } 
     }
+    //const parameters
     public int maxamount; // in centiliter = (cm^2)
     public int height, elevation; //in cm, pressure data
     public int length, radius;// in cm, friction data
-    public uint fluidType;
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = FluidSystem.MaxNeghbors)]
     public int[] neighboringPipes;
 
+
+    //derived/calculated parameters
     public int amount; // in centilitere =  (m^2 / 10000)
     public int pressure; // in mH2O * g(gravity const)
     public int flowAmount; // in liter/frame

@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -18,6 +19,10 @@ public class SurfaceManager : Singleton<SurfaceManager>
     [SerializeField]
     Vector3 gridSize = Vector3.one;
 
+
+    [SerializeField]
+    Grid grid;
+
     FixedIndexArray<SurfaceController> surfaces;// = new SurfaceController();
 
 #if UNITY_EDITOR
@@ -28,8 +33,11 @@ public class SurfaceManager : Singleton<SurfaceManager>
 #endif
     public int CurrentSurfaceNo { get; private set; } = 0;
     public SurfaceController CurrentSurface => surfaces.SafeGet(CurrentSurfaceNo);
-    public int ViewingSurfaceNo { get; private set; } = 0;
-    public SurfaceController ViewingSurface => surfaces.SafeGet(ViewingSurfaceNo);
+    public int? ViewingSurfaceNo { get; private set; } = 0;
+    public SurfaceController ViewingSurface => 
+        ViewingSurfaceNo == null ? 
+            null : surfaces.SafeGet(ViewingSurfaceNo ?? 0);
+
     protected override void Awake()
     {
         base.Awake();
@@ -48,6 +56,12 @@ public class SurfaceManager : Singleton<SurfaceManager>
             Task.WaitAll( tasks.ToArray() );
         });
     }
+
+    public static void PrepairRender()
+    {
+        
+    }
+
     public void ProcessEvents()
     {
         var events = EventManager.Instance.PopEvents(UpdateManager.FrameNo);
@@ -79,9 +93,6 @@ public class SurfaceManager : Singleton<SurfaceManager>
         });
     }
     
-    void DoRender()
-    { 
-    }
     public Vector2Int MousePositionAsGridPosition()
     {
         Vector3 input = Input.mousePosition;
@@ -102,7 +113,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
                 {
                     
                     DebugExtension.DrawPoint(new Vector3(gridOffset.x + gridSize.x * x, gridOffset.y + gridSize.y * y));
-                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+ surfaces?.SafeGet(ViewingSurfaceNo).chunkController.mapWidth:x)},{y}", GUIStyle.none);
+                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+ surfaces?.SafeGet(CurrentSurfaceNo).chunkController.mapWidth:x)},{y}", GUIStyle.none);
                 }
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(gridSize.x, 0), Color.red);
             DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, gridSize.y), Color.green);
@@ -112,8 +123,8 @@ public class SurfaceManager : Singleton<SurfaceManager>
         if (isDrawBlockGizmoEnabled)
         {
             //surface1?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), SObjectTypes.sObjectTypes[o.objectType].name));// o.objectType.ToString()
-            surfaces?.SafeGet(ViewingSurfaceNo).chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
-            surfaces?.SafeGet(ViewingSurfaceNo).chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
+            surfaces?.SafeGet(CurrentSurfaceNo).chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
+            surfaces?.SafeGet(CurrentSurfaceNo).chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
                                 new Bounds(o.Middle, new Vector2(o.shape.size.x, o.shape.size.y))
                     ));// o.objectType.ToString()
         }

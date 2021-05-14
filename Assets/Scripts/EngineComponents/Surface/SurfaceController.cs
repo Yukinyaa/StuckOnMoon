@@ -46,11 +46,6 @@ public class SurfaceController
         surfaceObejcts.CopyToNext();
         chunkController.PrepareNextFrame();
     }
-    
-    public void DoRender()
-    { 
-        
-    }
     public void DoUpdate()
     {
         
