@@ -157,6 +157,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "com.yukinyaa.fpmath": {
+      "version": "https://github.com/Yukinyaa/UnityFixedPointMath.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "c4a0752bfe78b6a945d1ba9b36f7038fdac77b8d"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

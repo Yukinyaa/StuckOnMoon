@@ -14,6 +14,7 @@
     "com.unity.textmeshpro": "3.0.4",
     "com.unity.timeline": "1.5.2",
     "com.unity.ugui": "1.0.0",
+    "com.yukinyaa.fpmath": "https://github.com/Yukinyaa/UnityFixedPointMath.git",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
