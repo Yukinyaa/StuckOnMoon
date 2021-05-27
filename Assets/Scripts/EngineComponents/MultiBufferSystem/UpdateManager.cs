@@ -37,7 +37,7 @@ public class UpdateManager : Singleton<UpdateManager>
     // Update is called once per frame
     void Update()
     {
-        InputManager.Instance.DoInput();
+        //InputManager.Instance.DoInput();
 
         PrevFrameTask?.Wait();
 
