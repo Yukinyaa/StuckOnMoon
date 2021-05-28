@@ -4,6 +4,6 @@ using UnityEngine;
 using XNode;
 
 [CreateAssetMenu]
-public class SimpleGraph : NodeGraph {
+public class MapGenGraph : NodeGraph {
 
 }

@@ -38,6 +38,10 @@ public class SurfaceController
 
                 //SurfaceEvent
             }
+            if (ev is SurfaceGenerateMapEvent)
+            { 
+                
+            }
         }
     }
 

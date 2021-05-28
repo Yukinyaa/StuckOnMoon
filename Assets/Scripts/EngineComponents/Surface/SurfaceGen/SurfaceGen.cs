@@ -69,6 +69,16 @@ public class SurfaceGen
         //};
     }
 
+    Fix64 med = Fix64.FromRaw(0x0000000000000000), 
+          var = Fix64.FromRaw(0x0000000F00000000); 
+    public int SurfaceGenV0(int x, int y)
+    {
+        var surfacePos = ValAt((Fix64)x, (Fix64)y, (Fix64)0, (Fix64)128) * med - var;
+        if (surfacePos < (Fix64)y)
+            return 1;
+        else
+            return 0;
+    }
 
     Fix64 ValAt(Fix64 x, Fix64 y, Fix64 z, Fix64 Scale)
     {
