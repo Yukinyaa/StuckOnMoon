@@ -69,12 +69,12 @@ public class SurfaceGen
         //};
     }
 
-    Fix64 med = new Fix64();
+    Fix64 med = (Fix64)5;
     Fix64 var = Fix64.FromRaw(0x0000000F00000000); //0x0000 000F 0000 0000
     public int SurfaceGenV0(int x, int y)
     {
-        var surfacePos = ValAt((Fix64)x, (Fix64)y, (Fix64)0, (Fix64)128) * med - var;
-        if (surfacePos < (Fix64)y)
+        var surfacePos = ValAt((Fix64)x, (Fix64)0, (Fix64)0, (Fix64)32) * var + med;
+        if (surfacePos > (Fix64)y)
             return 1;
         else
             return 0;
@@ -83,9 +83,9 @@ public class SurfaceGen
     Fix64 ValAt(Fix64 x, Fix64 y, Fix64 z, Fix64 Scale)
     {
         return Perlin(
-            Scale * x + offset[0],
-            Scale * y + offset[1],
-            Scale * z + offset[2]
+            x / Scale + offset[0],
+            y / Scale + offset[1],
+            z / Scale + offset[2]
             );
     //    return perlin(
     //        surfaceX[0] * Scale * x + surfaceY[0] * Scale * y + surfaceNormal[0] * Scale * z,

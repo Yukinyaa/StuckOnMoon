@@ -45,8 +45,8 @@ public class UpdateManager : Singleton<UpdateManager>
 
         ++UpdatingFrameNo;
         FrameHash = (byte)(UpdatingFrameNo % byte.MaxValue);
+        RenderedBuffer = RenderingBuffer;
         RenderingBuffer = UpdatingBuffer;
-        
         do
         {
             UpdatingBuffer = (UpdatingBuffer + 1) % BufferCount;

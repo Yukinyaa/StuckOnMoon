@@ -10,7 +10,7 @@ public class SurfaceRenderer : MonoBehaviour
 
     public void UpdateObject(SurfaceObject? obj, int index)
     {
-        while (gameObjects.Count < index)
+        while (gameObjects.Count <= index)
             gameObjects.Add(null);
         if (obj == null)
         {
@@ -25,10 +25,13 @@ public class SurfaceRenderer : MonoBehaviour
             return;
 
         if (gameObjects[index] != null && gameObjects[index].sObjectType != obj.Value.objectType)
+        {
+            Destroy(gameObjects[index]);
+        }
         if (gameObjects[index] == null)
-            gameObjects[index] = Instantiate(SurfaceGameObjectPrefabs.Instance[obj.Value.objectType]).GetComponent<SurfaceGameObject>();
+            gameObjects[index] = Instantiate(SurfaceGameObjectPrefabs.Instance[obj.Value.objectType], transform).GetComponent<SurfaceGameObject>();
 
-        gameObjects[index].transform.position = new Vector3(obj.Value.MidX, obj.Value.MidY, 0);
+        gameObjects[index].transform.localPosition = new Vector3(obj.Value.MidX, obj.Value.MidY, 0);
     }
 
 }

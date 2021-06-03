@@ -50,10 +50,12 @@ public class FixedIndexArray<T> : IEnumerable<T>
     public bool SafeGet(int index, out T result)
     {
         result = default;
-        if (array[index].nextFreeIndex != -1)
-            return false;
         if (maxIndex < index)
             return false;
+
+        if (array[index].nextFreeIndex != -1)
+            return false;
+        
         result = array[index].element;
         return true;
     }
@@ -112,15 +114,15 @@ public class FixedIndexArray<T> : IEnumerable<T>
     {
         other.CopyFrom(firstFreeIndex, lastFreeIndex, count, maxIndex, array);
     }
-    public void CopyFrom(int firstFreeIndex, int lastFreeIndex, int count, int maxIndex, FixedArrayElement<T>[] array)
+    public void CopyFrom(int firstFreeIndex, int lastFreeIndex, int count, int maxIndex, FixedArrayElement<T>[] array_)
     {
         this.firstFreeIndex = firstFreeIndex;
         this.lastFreeIndex = lastFreeIndex;
         this.count = count;
         this.maxIndex = maxIndex;
-        if (array.Length > this.array.Length)
-            this.array = new FixedArrayElement<T>[array.Length];
-        array.CopyTo(this.array, 0);
+        if (array_.Length > this.array.Length)
+            this.array = new FixedArrayElement<T>[array_.Length];
+        array_.CopyTo(this.array, 0);
     }
 
     public IEnumerator<T> GetEnumerator()

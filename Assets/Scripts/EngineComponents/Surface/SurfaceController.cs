@@ -51,6 +51,9 @@ public class SurfaceController
             if (ev is SurfaceGenerateMapEvent)
             {
                 SurfaceGenerateMapEvent sgme = ev as SurfaceGenerateMapEvent;
+                if (chunkController.IsGenerated(sgme.chunkNo.x, sgme.chunkNo.y))
+                    continue;
+                Debug.Log($"Generating Map {sgme.chunkNo.x}, {sgme.chunkNo.y}");
 
                 Debug.Assert(chunkController.ChunkExists(sgme.chunkNo.x, sgme.chunkNo.y) == false);
 
@@ -59,7 +62,8 @@ public class SurfaceController
 
                 int fromy = SurfaceChunkController.chunkSize * sgme.chunkNo.y;
                 int toy = SurfaceChunkController.chunkSize * (sgme.chunkNo.y + 1);
-                
+                chunkController.SetGenerated(sgme.chunkNo.x, sgme.chunkNo.y);
+
                 for (int x = fromx; x < tox; x++)
                 {
                     for (int y = fromy; y < toy; y++)

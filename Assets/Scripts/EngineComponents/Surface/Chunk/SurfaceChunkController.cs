@@ -14,7 +14,7 @@ public static class BlockIDConsts
 
 public class SurfaceChunkController
 {
-    public const int chunkSize = 64;
+    public const int chunkSize = 16;
     public int mapWidth;
     public int surfaceNo { get; private set; }
     public int mapHeight;
@@ -53,7 +53,7 @@ public class SurfaceChunkController
             argMax.x += mapWidth;
     }
 
-    public int2? UnknownChunkChunkInRange(int2 argMin, int2 argMax)
+    public void UnknownChunkChunkInRange(int2 argMin, int2 argMax)
     {
         ArgumentVectorPair(ref argMin, ref argMax);
 
@@ -65,14 +65,27 @@ public class SurfaceChunkController
         {
             for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
             {
-                if (chunks[xChunk % xChunkCount, yChunk] == null)
+                if (IsGenerated(xChunk % xChunkCount, yChunk) == false)
                 {
+                    Debug.Log($"ev: {xChunk % xChunkCount}, {yChunk}");
                     EventManager.Instance.RegisterEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk % xChunkCount, yChunk)));
+                    return;
                 }
             }
         }
-        return null;
+        return;
     }
+
+    internal bool IsGenerated(int x, int y)
+    {
+        return isGenerated[x, y];
+    }
+
+    internal void SetGenerated(int x, int y)
+    {
+        isGenerated[x, y] = true;
+    }
+
     /// <summary>
     /// input: min/max pair of arb
     /// </summary>
@@ -90,20 +103,24 @@ public class SurfaceChunkController
         {
             for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
             {
-                chunks[xChunk % xChunkCount, yChunk]?.Updating.ForEach(aa =>
+                if (chunks[xChunk % xChunkCount, yChunk] == null || chunks[xChunk % xChunkCount, yChunk].createdTime > UpdateManager.RenderingFrame)
+                    continue;
+                chunks[xChunk % xChunkCount, yChunk].Updating.ForEach(aa =>
                 {
                     bool isRenderingFilled = sObjects.SafeGetRendering(aa, out var rendering);
-                    bool isRenderedFilled = sObjects.SafeGetRendering(aa, out var rendered);
-                    if (isRenderingFilled != isRenderedFilled && rendering != rendered)
+                    bool isRenderedFilled = sObjects.SafeGetRendered(aa, out var rendered);
+                    if (isRenderingFilled != isRenderedFilled || rendering != rendered)
                     {
-                        action(isRenderingFilled ? (SurfaceObject?)null : rendering, aa);
+                        action(isRenderingFilled ? rendering : (SurfaceObject?)null, aa);
                     }
                 });
             }
         }
     }
 
+
     BufferedFixedIndexArray<int>[,] chunks;
+    bool[,] isGenerated;
     BufferedFixedIndexArray<SurfaceObject> sObjects;
 
 
@@ -116,6 +133,7 @@ public class SurfaceChunkController
         xChunkCount = mapWidth / chunkSize + 1;
         lastXChunkWidth = mapWidth % chunkSize;
         chunks = new BufferedFixedIndexArray<int>[mapWidth / chunkSize + 1, mapHeight / chunkSize + 1];
+        isGenerated = new bool[mapWidth / chunkSize + 1, mapHeight / chunkSize + 1];
         //chunk 0: 0 ~ chunksize -1, chunk 1: chunksize ~ chunksize*2-1
     }
 
