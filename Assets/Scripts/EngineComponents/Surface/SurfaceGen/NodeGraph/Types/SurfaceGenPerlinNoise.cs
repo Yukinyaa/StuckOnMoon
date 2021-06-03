@@ -15,7 +15,7 @@ namespace SoM.SurfaceGen
         public Fix64 clampValue;
         public override Fix64 GetValueAt(int x, int y)
         {
-            return Fix64.perlin(
+            return Fix64.Perlin(
                 (Fix64)xOffset + (Fix64)x / (Fix64)scale,
                 (Fix64)yOffset + (Fix64)y / (Fix64)scale,
                 (Fix64)zOffset);

@@ -20,9 +20,6 @@ public class SurfaceManager : Singleton<SurfaceManager>
     Vector3 gridSize = Vector3.one;
 
 
-    [SerializeField]
-    Grid grid;
-
     FixedIndexArray<SurfaceController> surfaces;// = new SurfaceController();
 
 #if UNITY_EDITOR
@@ -38,14 +35,15 @@ public class SurfaceManager : Singleton<SurfaceManager>
         ViewingSurfaceNo == null ? 
             null : surfaces.SafeGet(ViewingSurfaceNo ?? 0);
 
+    public SurfaceRenderer[] SurfaceRenderers;
+
     protected override void Awake()
     {
         base.Awake();
         {//prepair
             SObjectTypes.Init();//move elsewhere
             surfaces = new FixedIndexArray<SurfaceController>();
-            surfaces.Add(new SurfaceController());
-            new SurfaceController();
+            surfaces.Add(new SurfaceController(new byte[] { 123, 45, 67 }));
         }
     }
     public Task PrepareFrame()
@@ -57,9 +55,23 @@ public class SurfaceManager : Singleton<SurfaceManager>
         });
     }
 
-    public static void PrepairRender()
+    public void Render()
     {
+        int2 rangeMin, rangeMax;
+        {
+            float chunkPreloadMargin = 0.1f;
+            Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(  - chunkPreloadMargin,   - chunkPreloadMargin, 0));
+            Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(1 + chunkPreloadMargin, 1 + chunkPreloadMargin, 0));
+            
+
+            CurrentSurface.chunkController.ForEachLastObjectsInChunkRange(
+                
+                )
+        }
         
+        
+        CurrentSurface.chunkController.ForEachLastObjectsInChunkRange(
+            );
     }
 
     public void ProcessEvents()

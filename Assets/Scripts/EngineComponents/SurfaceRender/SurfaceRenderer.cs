@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class SurfaceRenderer : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    SurfaceGameObject[] sgo;
+
+    private void UpdateObject(Vector2 offset, int index)
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

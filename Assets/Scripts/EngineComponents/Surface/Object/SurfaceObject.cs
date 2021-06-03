@@ -59,7 +59,7 @@ public struct SurfaceObject
 
     #endregion
 
-    #region system obejects
+    #region system objects
 
     // public uint factorySystemID; there is only one factory system.
     public int factoryObjectID;

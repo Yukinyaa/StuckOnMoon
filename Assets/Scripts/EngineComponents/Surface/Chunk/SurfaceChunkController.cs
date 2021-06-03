@@ -29,7 +29,6 @@ public class SurfaceChunkController
     
     public void PrepareNextFrame()
     {
-        
         foreach (var a in chunks)
         {
             a?.CopyToNext();
@@ -60,9 +59,27 @@ public class SurfaceChunkController
         if (argMin.x > argMax.x)
             argMax.x += mapWidth;
     }
+    
+    /// <summary>
+    /// input: min/max pair of arb
+    /// </summary>
+    public void ForEachLastObjectsInChunkRange(int2 argMin, int2 argMax, Action<SurfaceObject> action)
+    {
+        ArgumentVectorPair(ref argMin, ref argMax);
+
+        for (int x = argMin.x; x < argMax.x; x++)
+        {
+            for (int y = argMin.y; y < argMax.y; y++)
+            {
+                chunks[x % mapWidth, y].Current.ForEach(aa => action(sObjects.GetLast(aa)));
+            }
+        }
+    }
 
     BufferedFixedIndexArray<int>[,] chunks;
     BufferedFixedIndexArray<SurfaceObject> sObjects;
+
+
     public SurfaceChunkController(BufferedFixedIndexArray<SurfaceObject> surfaceObejcts)
     {
         mapWidth = 4200;
@@ -74,6 +91,13 @@ public class SurfaceChunkController
         //chunk 0: 0 ~ chunksize -1, chunk 1: chunksize ~ chunksize*2-1
     }
 
+    public bool ChunkExists(int x, int y)
+    {
+        if (chunks[x, y] == null)
+            return false;
+        else
+            return chunks[x, y].Current.Count != 0;
+    }
 
     /// <summary>
     /// 
@@ -120,7 +144,7 @@ public class SurfaceChunkController
             a?.Current.ForEach(aa=>action(sObjects.GetCurrent(aa)));
         }
     }
-    bool CanPlaceObject(SurfaceObject addObj)
+    public bool CanPlaceObject(SurfaceObject addObj)
     {
         int maxXChunk = addObj.MaxX / chunkSize;
         if (addObj.MaxX > 4200)
