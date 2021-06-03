@@ -24,7 +24,7 @@ public class FluidSystem
 
     public void CopyToNextFrame()
     {
-        fBodies.CopyToNext();
+        fBodies.CopyUpdateToNext();
     }
     // Use this for initialization
 
@@ -33,12 +33,12 @@ public class FluidSystem
     {
         int minPressureBody = -1;
         int minPressure = -1;
-        for (int i = 0; i < fBodies.Current.MaxIndex; i++)
+        for (int i = 0; i < fBodies.Updating.MaxIndex; i++)
         {
-            if (!fBodies.SafeGetCurrent(i, out Fluidbody body))
+            if (!fBodies.SafeGetUpdating(i, out Fluidbody body))
                 continue;
 
-            fBodies.SafeGetLast(i, out Fluidbody lastBody);
+            fBodies.SafeGetRendering(i, out Fluidbody lastBody);
 
             body.pressure = fluidDensity * lastBody.amount * body.height / body.maxamount;//head pressure
             body.flowAmount = 0;
@@ -49,7 +49,7 @@ public class FluidSystem
                 for (int neg = 0; neg < MaxNeghbors; neg++)//todo: (주변 파이프압 - 마찰)중 최댓값 도입
                 {
                     if (body.neighboringPipes[neg] == -1) continue;
-                    Fluidbody neighbor = fBodies.GetCurrent(body.neighboringPipes[neg]);
+                    Fluidbody neighbor = fBodies.GetUpdating(body.neighboringPipes[neg]);
                     // 파이프 마찰 계산
                     int pressure = (int)(neighbor.pressure
                         + fluidDensity * (neighbor.elevation - body.elevation)// reflect elevation delta
@@ -71,7 +71,7 @@ public class FluidSystem
                 minPressureBody = i;
                 minPressure = body.pressure;
             }
-            fBodies.Current.Set(i, body); // ★Important★★★★★★★★★★★★
+            fBodies.Updating.Set(i, body); // ★Important★★★★★★★★★★★★
         }
 
 
@@ -110,7 +110,7 @@ public class FluidSystem
     void FlowFluid_Cascade(int startPoint)
     {
         Stack<int> bodyToUpdate = new Stack<int>();
-        int a = CurrentBuffer;
+        int a = UpdatingBuffer;
         int[] desiredFlowRate = new int[MaxNeghbors];
         int current = startPoint;
         //bodyToUpdate.Push(startPoint);
@@ -119,7 +119,7 @@ public class FluidSystem
             if(current == -1) current = bodyToUpdate.Pop();
 
 #if DEBUG
-            if (!fBodies.SafeGetCurrent(current, out Fluidbody currentBody))
+            if (!fBodies.SafeGetUpdating(current, out Fluidbody currentBody))
                 throw new System.Exception("Fucking Idiot");
 #else
             Fluidbody currentBody = fBodies.GetCurrent(current));
@@ -154,17 +154,17 @@ public class FluidSystem
 
                 //if delta is positive, pressure is headed towards this node.
                 int pressureDelta =
-                    fBodies.Current.Get(currentBody.neighboringPipes[neg]).pressure - currentBody.pressure
-                    + fluidDensity * (fBodies.Current.Get(currentBody.neighboringPipes[neg]).pressure - currentBody.elevation);
+                    fBodies.Updating.Get(currentBody.neighboringPipes[neg]).pressure - currentBody.pressure
+                    + fluidDensity * (fBodies.Updating.Get(currentBody.neighboringPipes[neg]).pressure - currentBody.elevation);
                 
                 //if flowing to this node
                 if (pressureDelta >= 0)
                 { 
                     //then add flow to sum flow
-                    desiredFlowSum += (desiredFlowRate[neg] = Mathf.Min((int)(pressureDelta * flowConstant), fBodies.Current.Get(currentBody.neighboringPipes[neg]).amount));
+                    desiredFlowSum += (desiredFlowRate[neg] = Mathf.Min((int)(pressureDelta * flowConstant), fBodies.Updating.Get(currentBody.neighboringPipes[neg]).amount));
                 }
                 //if the pressure is negative, then calculate other body first
-                else if(fBodies.Current.Get(currentBody.neighboringPipes[neg]).finalizedFrame != FrameHash)
+                else if(fBodies.Updating.Get(currentBody.neighboringPipes[neg]).finalizedFrame != FrameHash)
                 {   
                     //bodyToUpdate.Push(current); << will come here someday.
                     
@@ -196,10 +196,10 @@ public class FluidSystem
 
                     if (flowAmount > 0)
                     {
-                        var negbody = fBodies.Current.Get(currentBody.neighboringPipes[neg]);
+                        var negbody = fBodies.Updating.Get(currentBody.neighboringPipes[neg]);
                         negbody.amount -= flowAmount;
                         negbody.flowAmount += flowAmount;
-                        fBodies.Current.Set(currentBody.neighboringPipes[neg], negbody);
+                        fBodies.Updating.Set(currentBody.neighboringPipes[neg], negbody);
                     }
                 }
             }
@@ -225,10 +225,10 @@ public class FluidSystem
 
                     actualFlowSum -= maxFlowRate;
 
-                    var negbody = fBodies.Current.Get(currentBody.neighboringPipes[maxIndex]);
+                    var negbody = fBodies.Updating.Get(currentBody.neighboringPipes[maxIndex]);
                     negbody.amount -= maxFlowRate;
                     negbody.flowAmount += maxFlowRate;
-                    fBodies.Current.Set(currentBody.neighboringPipes[maxIndex], negbody);
+                    fBodies.Updating.Set(currentBody.neighboringPipes[maxIndex], negbody);
 
                     if (actualFlowSum == 0) break;
 
@@ -244,7 +244,7 @@ public class FluidSystem
             }
             currentBody.finalizedFrame = FrameHash;
 
-            fBodies.Current.Set(current, currentBody);
+            fBodies.Updating.Set(current, currentBody);
             current = -1;
         Cotinue: continue;
         }

@@ -31,7 +31,7 @@ public class SurfaceChunkController
     {
         foreach (var a in chunks)
         {
-            a?.CopyToNext();
+            a?.CopyUpdateToNext();
         }
     }
 
@@ -71,7 +71,7 @@ public class SurfaceChunkController
         {
             for (int y = argMin.y; y < argMax.y; y++)
             {
-                chunks[x % mapWidth, y].Current.ForEach(aa => action(sObjects.GetLast(aa)));
+                chunks[x % mapWidth, y].Updating.ForEach(aa => action(sObjects.GetRendering(aa)));
             }
         }
     }
@@ -96,7 +96,7 @@ public class SurfaceChunkController
         if (chunks[x, y] == null)
             return false;
         else
-            return chunks[x, y].Current.Count != 0;
+            return chunks[x, y].Updating.Count != 0;
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public class SurfaceChunkController
     /// <returns>If placing block has succedeed</returns>
     public bool RegisterObject(int objectIdx)
     {
-        SurfaceObject addObj = sObjects.GetCurrent(objectIdx);
+        SurfaceObject addObj = sObjects.GetUpdating(objectIdx);
         if (CanPlaceObject(addObj) == false)
             return false;
 
@@ -124,7 +124,7 @@ public class SurfaceChunkController
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null)
                     chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<int>();
-                chunks[xChunk % xChunkCount, yChunk].Current.Add(objectIdx);
+                chunks[xChunk % xChunkCount, yChunk].Updating.Add(objectIdx);
             }
         }
         return true;
@@ -141,7 +141,7 @@ public class SurfaceChunkController
     {
         foreach ( var a in chunks)
         {
-            a?.Current.ForEach(aa=>action(sObjects.GetCurrent(aa)));
+            a?.Updating.ForEach(aa=>action(sObjects.GetUpdating(aa)));
         }
     }
     public bool CanPlaceObject(SurfaceObject addObj)
@@ -154,7 +154,7 @@ public class SurfaceChunkController
         {
             for (int yChunk = addObj.MinY / chunkSize; yChunk <= addObj.MaxY / chunkSize; ++yChunk)
             {
-                if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk % xChunkCount, yChunk].Current.Exists(obj => sObjects.GetCurrent(obj).IsCollideWith(addObj)))
+                if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk % xChunkCount, yChunk].Updating.Exists(obj => sObjects.GetUpdating(obj).IsCollideWith(addObj)))
                     return false;
             }
         }

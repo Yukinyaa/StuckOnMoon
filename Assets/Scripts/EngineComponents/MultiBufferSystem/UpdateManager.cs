@@ -11,26 +11,28 @@ public class UpdateManager : Singleton<UpdateManager>
         base.Awake();
         Init();
     }
-    public const int BufferCount = 4;
-    public static int CurrentBuffer; //{ get; private set; }
-    public static int LastBuffer;// { get; private set; }//todo re-enable for release
-    public static byte FrameHash;// { get; private set; }
+    public const int BufferCount = 5;
+    public static int RenderedBuffer { get; private set; }
+    public static int UpdatingBuffer { get; private set; }
+    public static int RenderingBuffer { get; private set; }
+    public static byte FrameHash { get; private set; }
     public static int? LockedFrame = null;
     public static int NextBuffer
     {
-        get => (CurrentBuffer + 1) % BufferCount == LockedFrame ?
-              (CurrentBuffer + 2) % BufferCount :
-              (CurrentBuffer + 1) % BufferCount;
+        get => (UpdatingBuffer + 1) % BufferCount == LockedFrame ?
+              (UpdatingBuffer + 2) % BufferCount :
+              (UpdatingBuffer + 1) % BufferCount;
     }
-    public static ulong FrameNo { get; private set; } = 0;
-    public static ulong UpdatingFrame => FrameNo;
-    public static ulong LastFrame => FrameNo - 1;
-    public static ulong NextFrame => FrameNo + 1;
+    public static ulong UpdatingFrameNo { get; private set; } = 0;
+    public static ulong UpdatingFrame => UpdatingFrameNo;
+    public static ulong RenderingFrame => UpdatingFrameNo - 1;
+    public static ulong NextUpdatingFrame => UpdatingFrameNo + 1;
 
     void Init()
     {
-        LastBuffer = 0;
-        CurrentBuffer = 1;
+        RenderedBuffer = 0;
+        RenderingBuffer = 1;
+        UpdatingBuffer = 2;
     }
 
     Task PrevFrameTask = null;
@@ -41,14 +43,14 @@ public class UpdateManager : Singleton<UpdateManager>
 
         PrevFrameTask?.Wait();
 
-        ++FrameNo;
-        FrameHash = (byte)(FrameNo % byte.MaxValue);
-        LastBuffer = CurrentBuffer;
+        ++UpdatingFrameNo;
+        FrameHash = (byte)(UpdatingFrameNo % byte.MaxValue);
+        RenderingBuffer = UpdatingBuffer;
 
         do
         {
-            CurrentBuffer = (CurrentBuffer + 1) % BufferCount;
-        } while (LockedFrame == CurrentBuffer);
+            UpdatingBuffer = (UpdatingBuffer + 1) % BufferCount;
+        } while (LockedFrame == UpdatingBuffer);
 
 
         SurfaceManager.Instance.ProcessEvents();

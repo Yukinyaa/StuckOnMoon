@@ -19,6 +19,6 @@ struct BufferedData<T> where T : unmanaged
     /// </summary>
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = UpdateManager.BufferCount)]
     T[] array;
-    public T Current => array[UpdateManager.CurrentBuffer];
-    public T Last { get => array[UpdateManager.LastBuffer]; }
+    public T Current => array[UpdateManager.UpdatingBuffer];
+    public T Last { get => array[UpdateManager.RenderingBuffer]; }
 }

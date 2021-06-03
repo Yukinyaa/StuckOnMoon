@@ -10,43 +10,43 @@ public class BufferedFixedIndexArray<T>
     FixedIndexArray<T>[] arrays = new FixedIndexArray<T>[UpdateManager.BufferCount];
     #region get/setters
     
-    public T GetCurrent(int index)
+    public T GetUpdating(int index)
     {
-        return arrays[CurrentBuffer].Get(index);
+        return arrays[UpdatingBuffer].Get(index);
     }
-    public bool SafeGetCurrent(int index, out T data)
+    public bool SafeGetUpdating(int index, out T data)
     {
-        return arrays[CurrentBuffer].SafeGet(index, out data);
-    }
-
-    public T GetLast(int index)
-    {
-        return arrays[LastBuffer].Get(index);
+        return arrays[UpdatingBuffer].SafeGet(index, out data);
     }
 
-    public bool SafeGetLast(int index, out T data)
+    public T GetRendering(int index)
     {
-        return arrays[LastBuffer].SafeGet(index, out data);
+        return arrays[RenderingBuffer].Get(index);
+    }
+
+    public bool SafeGetRendering(int index, out T data)
+    {
+        return arrays[RenderingBuffer].SafeGet(index, out data);
     }
 
 
-    public void CopyLast()
+    public void CopyFromRendering()
     {
-        Last.CopyTo(Current);
+        Rendering.CopyTo(Updating);
     }
-    public void CopyToNext()
+    public void CopyUpdateToNext()
     {
-        Current.CopyTo(Next);
+        Updating.CopyTo(NextUpdate);
     }
-    public FixedIndexArray<T> Current { get => arrays[CurrentBuffer]; }
-    public FixedIndexArray<T> Last { get => arrays[LastBuffer]; }
+    public FixedIndexArray<T> Updating { get => arrays[UpdatingBuffer]; }
+    public FixedIndexArray<T> Rendering { get => arrays[RenderingBuffer]; }
 
-    public FixedIndexArray<T> Next { get => arrays[NextBuffer]; }
+    public FixedIndexArray<T> NextUpdate { get => arrays[NextBuffer]; }
     #endregion
     public ulong createdTime { get; private set; }
     public BufferedFixedIndexArray()
     {
-        createdTime = UpdateManager.FrameNo;
+        createdTime = UpdateManager.UpdatingFrameNo;
         for (int i = 0; i < BufferCount; i++)
         {
             arrays[i] = new FixedIndexArray<T>();

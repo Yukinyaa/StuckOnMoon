@@ -15,14 +15,14 @@ public class SurfaceController
     public SurfaceController(byte[] seed)
     {
         surfaceGen = new SurfaceGen(seed);
-        CreatedAt = UpdateManager.FrameNo;
+        CreatedAt = UpdateManager.UpdatingFrameNo;
         surfaceObjects = new BufferedFixedIndexArray<SurfaceObject>();
         chunkController = new SurfaceChunkController(surfaceObjects);
     }
 
     public void RegisterEvents(List<SurfaceEvent> events)
     {
-        Debug.Assert(events.TrueForAll(a => a.RegistedFrame == UpdateManager.FrameNo || a.RegistedFrame == null));
+        Debug.Assert(events.TrueForAll(a => a.RegistedFrame == UpdateManager.UpdatingFrameNo || a.RegistedFrame == null));
         foreach (var ev in events)
         {
             if (ev is SurfacePlaceObjectEvent)
@@ -33,7 +33,7 @@ public class SurfaceController
                 chunkController.CanPlaceObject(spoe.position, spoe.blockType);
 
                 SurfaceObject newObject = new SurfaceObject(spoe.position, spoe.blockType);
-                int newObjectIndex = surfaceObjects.Current.Add(newObject);
+                int newObjectIndex = surfaceObjects.Updating.Add(newObject);
                 chunkController.RegisterObject(newObjectIndex);
 
                 //SurfaceEvent
@@ -58,7 +58,7 @@ public class SurfaceController
                         if (blockNo != 0)
                         {
                             var sObject = new SurfaceObject(new Unity.Mathematics.int2(x, y), blockNo);
-                            int sObjIdx = surfaceObjects.Current.Add(sObject);
+                            int sObjIdx = surfaceObjects.Updating.Add(sObject);
                             chunkController.RegisterObject(sObjIdx);
                         }
                         
@@ -70,7 +70,7 @@ public class SurfaceController
 
     public void PrepareNextFrame()
     {
-        surfaceObjects.CopyToNext();
+        surfaceObjects.CopyUpdateToNext();
         chunkController.PrepareNextFrame();
     }
     public JobHandle DoUpdate()

@@ -76,7 +76,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
 
     public void ProcessEvents()
     {
-        var events = EventManager.Instance.PopEvents(UpdateManager.FrameNo);
+        var events = EventManager.Instance.PopEvents(UpdateManager.UpdatingFrameNo);
 
 
         //process global event ex)chatting etc
