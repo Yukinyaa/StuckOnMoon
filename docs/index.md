@@ -16,13 +16,38 @@ Automate factories, manage galaxy-size logistic problem!
 - "late 2023™"  early access launch
 
 ## Support me
+
 I'm student who wants to work full time on this project
 I can stop working part-time jobs if you support me :)
 
 {% include button.html text="Buy me a coffee ☕️" link="https://ko-fi.com/stuckonmoon" color="#f68140" %}
 
 
+
 <!--
+
+- 
+
+## My story
+
+I'm a student who is very keen to make a game.
+
+I started making games since 2012, since then, I really wanted to make factory themed game,
+Since then, I went though many projects. From school project to game development club,
+It's no exaggeration that I dedicated my teen~20s to game development.
+
+I revisited "2012 game note" often, which was mainly about this project "Stuck on Moon", which I had very much doubt that I had skill and colleagues to finish this project, since I really adored this project.
+
+Finally last year, I invested some time researching [Unity DOTS](https://unity.com/dots). Which made me pretty certain that I finally had skills to start making stuck on moon.
+
+So, what I want to say is, I really adore this project. I really wanted to share my passion :)
+
+
+
+
+
+I mainly used Unity since 2016, before then I used generic graphic library (allegro and XNA, to be specific)
+
 ## Customising
 
 When using Alembic as a theme means you can take advantage of the file overriding method. This allows you to overwrite any file in this theme with your own custom file, by matching the file name and path. The most common example of this would be if you want to add your own styles or change the core style settings.
