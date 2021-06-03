@@ -1,25 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Unity.Collections;
 using Unity.Mathematics;
 using System.Threading.Tasks;
 using System.Linq;
-using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public class SurfaceManager : Singleton<SurfaceManager>
 {
-
-
-    [SerializeField]
-    Vector3 gridOffset = Vector3.zero;
-    [SerializeField]
-    Vector3 gridSize = Vector3.one;
-
-
     FixedIndexArray<SurfaceController> surfaces;// = new SurfaceController();
 
 #if UNITY_EDITOR
@@ -28,6 +16,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
     [SerializeField]
     private bool isDrawBlockGizmoEnabled;
 #endif
+    public int2 gridOffset = new int2(0, 0);
     public int CurrentSurfaceNo { get; private set; } = 0;
     public SurfaceController CurrentSurface => surfaces.SafeGet(CurrentSurfaceNo);
     public int? ViewingSurfaceNo { get; private set; } = 0;
@@ -43,7 +32,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
         {//prepair
             SObjectTypes.Init();//move elsewhere
             surfaces = new FixedIndexArray<SurfaceController>();
-            surfaces.Add(new SurfaceController(new byte[] { 123, 45, 67 }));
+            surfaces.Add(new SurfaceController(new byte[] { 123, 45, 67 }, 0));
         }
     }
     public Task PrepareFrame()
@@ -57,21 +46,14 @@ public class SurfaceManager : Singleton<SurfaceManager>
 
     public void Render()
     {
-        int2 rangeMin, rangeMax;
+        for (int i = 0; i <= surfaces.MaxIndex; i++)
         {
-            float chunkPreloadMargin = 0.1f;
-            Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(  - chunkPreloadMargin,   - chunkPreloadMargin, 0));
-            Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(1 + chunkPreloadMargin, 1 + chunkPreloadMargin, 0));
-            
-
-            CurrentSurface.chunkController.ForEachLastObjectsInChunkRange(
-                
-                )
+            if (surfaces.SafeGet(i, out var surface))
+            {
+                if (surface == CurrentSurface || surface == ViewingSurface)
+                    surface.DoRender();
+            }
         }
-        
-        
-        CurrentSurface.chunkController.ForEachLastObjectsInChunkRange(
-            );
     }
 
     public void ProcessEvents()
@@ -104,13 +86,25 @@ public class SurfaceManager : Singleton<SurfaceManager>
             UnityEngine.Profiling.Profiler.EndThreadProfiling();
         });
     }
-    
-    public Vector2Int MousePositionAsGridPosition()
+
+    public Vector2 GridPositionAsWorldPosition(int2 gridPos)
+    {
+        return new Vector2(gridPos.x + gridOffset.x, gridPos.y + gridOffset.y);
+    }
+    public int2 WorldPositionAsGridPosition(Vector2 worldPos)
+    {
+        return new int2(Mathf.FloorToInt(worldPos.x - gridOffset.x), Mathf.FloorToInt(worldPos.y - gridOffset.y));
+    }
+    public int2 WorldPositionAsGridLocalPosition(Vector2 worldPos)
+    {
+        return new int2(Mathf.FloorToInt(worldPos.x), Mathf.FloorToInt(worldPos.y));
+    }
+    public int2 MousePositionAsGridPosition()
     {
         Vector3 input = Input.mousePosition;
-        input.z = gridOffset.z;
+        input.z = 0;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(input);  //tip: rendering camera may not be main
-        return new Vector2Int(Mathf.FloorToInt((worldPos.x - gridOffset.x) / gridSize.x), Mathf.FloorToInt(worldPos.y - gridOffset.y / gridSize.y));
+        return new int2(Mathf.FloorToInt(worldPos.x - gridOffset.x), Mathf.FloorToInt(worldPos.y - gridOffset.y));
 
     }
 
@@ -124,11 +118,11 @@ public class SurfaceManager : Singleton<SurfaceManager>
                 for (int y = 0; y <= 8; y++)
                 {
                     
-                    DebugExtension.DrawPoint(new Vector3(gridOffset.x + gridSize.x * x, gridOffset.y + gridSize.y * y));
-                    Handles.Label(new Vector3(gridOffset.x + gridSize.x * (x + 0.5f), gridOffset.y + gridSize.y * (y + 0.5f)), $"{(x<0?x+ surfaces?.SafeGet(CurrentSurfaceNo).chunkController.mapWidth:x)},{y}", GUIStyle.none);
+                    DebugExtension.DrawPoint(new Vector3(gridOffset.x + x, gridOffset.y + y));
+                    Handles.Label(new Vector3(gridOffset.x + (x + 0.5f), gridOffset.y + (y + 0.5f)), $"{(x<0?x+ surfaces?.SafeGet(CurrentSurfaceNo).chunkController.mapWidth:x)},{y}", GUIStyle.none);
                 }
-            DebugExtension.DrawArrow(Vector3.zero, new Vector3(gridSize.x, 0), Color.red);
-            DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, gridSize.y), Color.green);
+            DebugExtension.DrawArrow(Vector3.zero, new Vector3(1, 0), Color.red);
+            DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, 1), Color.green);
         }
 
 

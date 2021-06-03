@@ -19,6 +19,11 @@ public class BufferedFixedIndexArray<T>
         return arrays[UpdatingBuffer].SafeGet(index, out data);
     }
 
+    public T GetRendered(int index)
+    {
+        return arrays[RenderedBuffer].Get(index);
+    }
+
     public T GetRendering(int index)
     {
         return arrays[RenderingBuffer].Get(index);
@@ -27,6 +32,10 @@ public class BufferedFixedIndexArray<T>
     public bool SafeGetRendering(int index, out T data)
     {
         return arrays[RenderingBuffer].SafeGet(index, out data);
+    }
+    public bool SafeGetRendered(int index, out T data)
+    {
+        return arrays[RenderedBuffer].SafeGet(index, out data);
     }
 
 
@@ -40,8 +49,8 @@ public class BufferedFixedIndexArray<T>
     }
     public FixedIndexArray<T> Updating { get => arrays[UpdatingBuffer]; }
     public FixedIndexArray<T> Rendering { get => arrays[RenderingBuffer]; }
-
     public FixedIndexArray<T> NextUpdate { get => arrays[NextBuffer]; }
+
     #endregion
     public ulong createdTime { get; private set; }
     public BufferedFixedIndexArray()

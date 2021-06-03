@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class SurfaceController
@@ -11,13 +12,22 @@ public class SurfaceController
         SurfaceChunkController chunkController;
     BufferedFixedIndexArray<SurfaceObject> surfaceObjects;
     SurfaceGen surfaceGen;
+    SurfaceRenderer renderer;
+    int surfaceNo;
+    public int2 gridOffset;
 
-    public SurfaceController(byte[] seed)
+    public string Name { get; private set; } = "nauvis";
+
+    public SurfaceController(byte[] seed, int surfaceNo)
     {
         surfaceGen = new SurfaceGen(seed);
         CreatedAt = UpdateManager.UpdatingFrameNo;
         surfaceObjects = new BufferedFixedIndexArray<SurfaceObject>();
-        chunkController = new SurfaceChunkController(surfaceObjects);
+        this.surfaceNo = surfaceNo;
+        chunkController = new SurfaceChunkController(surfaceObjects, surfaceNo);
+        var go = new GameObject($"{Name} Renderer");
+        
+        renderer = go.AddComponent<SurfaceRenderer>();
     }
 
     public void RegisterEvents(List<SurfaceEvent> events)
@@ -72,6 +82,42 @@ public class SurfaceController
     {
         surfaceObjects.CopyUpdateToNext();
         chunkController.PrepareNextFrame();
+    }
+    public void DoRender()
+    {
+        int2 rangeMin, rangeMax;
+        {
+            float chunkPreloadMargin = 0.1f;
+            
+            var resolution = Screen.currentResolution;
+            Vector2 resolution2 = new Vector2(resolution.width, resolution.height);
+
+            Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (  - chunkPreloadMargin), resolution2.y * (  - chunkPreloadMargin), 0));
+            Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (1 + chunkPreloadMargin), resolution2.y * (1 + chunkPreloadMargin), 0));
+
+            rangeMin = WorldPositionAsGridPosition(camMinWorldPoint);
+            rangeMax = WorldPositionAsGridPosition(camMaxWorldPoint);
+        }
+
+        chunkController.UnknownChunkChunkInRange(rangeMin, rangeMax);
+        chunkController.ForEachLastObjectsInChunkRange(rangeMin, rangeMax, (obj, index) => renderer.UpdateObject(obj, index));
+    }
+
+    public Vector2 GridPositionAsWorldPosition(int2 gridPos)
+    {
+        return new Vector2(gridPos.x + gridOffset.x, gridPos.y + gridOffset.y);
+    }
+    public int2 WorldPositionAsGridPosition(Vector2 worldPos)
+    {
+        return new int2(Mathf.FloorToInt((worldPos.x - gridOffset.x)), Mathf.FloorToInt(worldPos.y - gridOffset.y));
+    }
+    public int2 MousePositionAsGridPosition()
+    {
+        Vector3 input = Input.mousePosition;
+        input.z = 0;
+        Vector3 worldPos = Camera.main.ScreenToWorldPoint(input);  //tip: rendering camera may not be main
+        return new int2(Mathf.FloorToInt(worldPos.x - gridOffset.x), Mathf.FloorToInt(worldPos.y - gridOffset.y));
+
     }
     public JobHandle DoUpdate()
     {

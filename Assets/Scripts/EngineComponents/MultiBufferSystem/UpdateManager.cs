@@ -46,18 +46,18 @@ public class UpdateManager : Singleton<UpdateManager>
         ++UpdatingFrameNo;
         FrameHash = (byte)(UpdatingFrameNo % byte.MaxValue);
         RenderingBuffer = UpdatingBuffer;
-
+        
         do
         {
             UpdatingBuffer = (UpdatingBuffer + 1) % BufferCount;
         } while (LockedFrame == UpdatingBuffer);
-
+        //if saving is finished, gogogo
 
         SurfaceManager.Instance.ProcessEvents();
 
         PrevFrameTask = SurfaceManager.Instance.DoUpdate();
 
-        SurfaceManager.Render();
+        SurfaceManager.Instance.Render();
 
 
     }

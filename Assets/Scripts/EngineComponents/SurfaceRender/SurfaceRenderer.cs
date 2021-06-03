@@ -4,11 +4,31 @@ using UnityEngine;
 
 public class SurfaceRenderer : MonoBehaviour
 {
-    SurfaceGameObject[] sgo;
+    List<SurfaceGameObject> gameObjects = new List<SurfaceGameObject>();
+    Vector3 blockOffset = new Vector3(0, 0, 0);
 
-    private void UpdateObject(Vector2 offset, int index)
+
+    public void UpdateObject(SurfaceObject? obj, int index)
     {
-        
+        while (gameObjects.Count < index)
+            gameObjects.Add(null);
+        if (obj == null)
+        {
+            if (gameObjects[index] != null)
+            {
+                Destroy(gameObjects[index]);
+            }
+            return;
+        }
+
+        if (obj.Value.objectType == 0)
+            return;
+
+        if (gameObjects[index] != null && gameObjects[index].sObjectType != obj.Value.objectType)
+        if (gameObjects[index] == null)
+            gameObjects[index] = Instantiate(SurfaceGameObjectPrefabs.Instance[obj.Value.objectType]).GetComponent<SurfaceGameObject>();
+
+        gameObjects[index].transform.position = new Vector3(obj.Value.MidX, obj.Value.MidY, 0);
     }
 
 }

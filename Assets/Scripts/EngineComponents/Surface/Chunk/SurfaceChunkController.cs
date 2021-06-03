@@ -16,6 +16,7 @@ public class SurfaceChunkController
 {
     public const int chunkSize = 64;
     public int mapWidth;
+    public int surfaceNo { get; private set; }
     public int mapHeight;
     public int xChunkCount;
     public int lastXChunkWidth;
@@ -35,16 +36,6 @@ public class SurfaceChunkController
         }
     }
 
-    public void SetViewport(int2 bottmLeft, int2 topRight)
-    {
-        ArgumentVectorPair(ref bottmLeft, ref topRight);
-
-        int maxXChunk = bottmLeft.x / chunkSize;
-        if (topRight.x > 4200)
-            maxXChunk = (topRight.x - 4200) / chunkSize + xChunkCount;
-
-        int maxYChunk = topRight.y / chunkSize;
-    }
     // Euclidian mod.
     int EucMod(int k, int n) { return ((k %= n) < 0) ? k + n : k; }
 
@@ -56,22 +47,58 @@ public class SurfaceChunkController
     {
         argMin.x = EucMod(argMin.x, mapWidth);
         argMax.x = EucMod(argMax.x, mapWidth);
+        argMin.y = Mathf.Max(argMin.y, 0);
+        argMax.y = Mathf.Max(argMax.y, 0);
         if (argMin.x > argMax.x)
             argMax.x += mapWidth;
     }
-    
-    /// <summary>
-    /// input: min/max pair of arb
-    /// </summary>
-    public void ForEachLastObjectsInChunkRange(int2 argMin, int2 argMax, Action<SurfaceObject> action)
+
+    public int2? UnknownChunkChunkInRange(int2 argMin, int2 argMax)
     {
         ArgumentVectorPair(ref argMin, ref argMax);
 
-        for (int x = argMin.x; x < argMax.x; x++)
+        //for each chunk
+        int maxXChunk = argMax.x / chunkSize;
+        int maxYChunk = argMax.y / chunkSize;
+
+        for (int xChunk = argMin.x / chunkSize; xChunk <= maxXChunk; ++xChunk)
         {
-            for (int y = argMin.y; y < argMax.y; y++)
+            for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
             {
-                chunks[x % mapWidth, y].Updating.ForEach(aa => action(sObjects.GetRendering(aa)));
+                if (chunks[xChunk % xChunkCount, yChunk] == null)
+                {
+                    EventManager.Instance.RegisterEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk % xChunkCount, yChunk)));
+                }
+            }
+        }
+        return null;
+    }
+    /// <summary>
+    /// input: min/max pair of arb
+    /// </summary>
+    public void ForEachLastObjectsInChunkRange(int2 argMin, int2 argMax, Action<SurfaceObject?, int> action)
+    {
+        ArgumentVectorPair(ref argMin, ref argMax);
+
+        //for each chunk
+
+
+        int maxXChunk = argMax.x / chunkSize;
+        int maxYChunk = argMax.y / chunkSize;
+
+        for (int xChunk = argMin.x / chunkSize; xChunk <= maxXChunk; ++xChunk)
+        {
+            for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
+            {
+                chunks[xChunk % xChunkCount, yChunk]?.Updating.ForEach(aa =>
+                {
+                    bool isRenderingFilled = sObjects.SafeGetRendering(aa, out var rendering);
+                    bool isRenderedFilled = sObjects.SafeGetRendering(aa, out var rendered);
+                    if (isRenderingFilled != isRenderedFilled && rendering != rendered)
+                    {
+                        action(isRenderingFilled ? (SurfaceObject?)null : rendering, aa);
+                    }
+                });
             }
         }
     }
@@ -80,10 +107,11 @@ public class SurfaceChunkController
     BufferedFixedIndexArray<SurfaceObject> sObjects;
 
 
-    public SurfaceChunkController(BufferedFixedIndexArray<SurfaceObject> surfaceObejcts)
+    public SurfaceChunkController(BufferedFixedIndexArray<SurfaceObject> surfaceObejcts, int surfaceNo)
     {
         mapWidth = 4200;
         mapHeight = 1200;
+        this.surfaceNo = surfaceNo;
         sObjects = surfaceObejcts;
         xChunkCount = mapWidth / chunkSize + 1;
         lastXChunkWidth = mapWidth % chunkSize;

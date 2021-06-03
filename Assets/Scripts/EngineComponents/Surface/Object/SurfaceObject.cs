@@ -20,6 +20,13 @@ public struct SurfaceObject
         this.factoryObjectID = -1;
     }
 
+    public static bool operator ==(SurfaceObject a, SurfaceObject b)
+       => a.postion.x == b.postion.x && a.postion.y == b.postion.y && a.objectType == b.objectType && a.status == b.status;
+
+
+    public static bool operator !=(SurfaceObject a, SurfaceObject b)
+       => !(a == b);
+
     public override string ToString()
     {
         return $"{postion.x}, {postion.y}: {SObjectTypes.sObjectTypes[objectType].name}";

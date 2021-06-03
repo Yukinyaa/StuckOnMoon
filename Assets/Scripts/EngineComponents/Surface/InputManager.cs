@@ -43,10 +43,10 @@ class InputManager : Singleton<InputManager>
         }
 
 
-        Vector2 pos = SurfaceManager.Instance.MousePositionAsGridPosition();
+        int2 pos = SurfaceManager.Instance.MousePositionAsGridPosition();
         var placingObjectShape = SObjectTypes.sObjectTypes[objectOnHand].shape;
 
-        Vector2 posArgumented = pos - (new Vector2(placingObjectShape.size.x, placingObjectShape.size.y) / 2);
+        int2 posArgumented = pos - (new int2(placingObjectShape.size.x, placingObjectShape.size.y) / 2);
         
         //render ghost
 
