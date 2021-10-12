@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
@@ -65,7 +65,7 @@ public class SurfaceChunkController
         {
             for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
             {
-                if (IsGenerated(xChunk % xChunkCount, yChunk) == false)
+                if (ChunkExists(xChunk % xChunkCount, yChunk) == false)
                 {
                     Debug.Log($"ev: {xChunk % xChunkCount}, {yChunk}");
                     EventManager.Instance.RegisterEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk % xChunkCount, yChunk)));
@@ -74,16 +74,6 @@ public class SurfaceChunkController
             }
         }
         return;
-    }
-
-    internal bool IsGenerated(int x, int y)
-    {
-        return isGenerated[x, y];
-    }
-
-    internal void SetGenerated(int x, int y)
-    {
-        isGenerated[x, y] = true;
     }
 
     /// <summary>
@@ -98,6 +88,7 @@ public class SurfaceChunkController
 
         int maxXChunk = argMax.x / chunkSize;
         int maxYChunk = argMax.y / chunkSize;
+        int q = 0;
 
         for (int xChunk = argMin.x / chunkSize; xChunk <= maxXChunk; ++xChunk)
         {
@@ -107,6 +98,7 @@ public class SurfaceChunkController
                     continue;
                 chunks[xChunk % xChunkCount, yChunk].Updating.ForEach(aa =>
                 {
+                    q++;
                     bool isRenderingFilled = sObjects.SafeGetRendering(aa, out var rendering);
                     bool isRenderedFilled = sObjects.SafeGetRendered(aa, out var rendered);
                     if (isRenderingFilled != isRenderedFilled || rendering != rendered)
@@ -116,11 +108,16 @@ public class SurfaceChunkController
                 });
             }
         }
+        Debug.Log($"Rendered {q} obejcts for frame #{UpdateManager.RenderingFrame}");
     }
 
+    internal void Generate(int x, int y)
+    {
+        if (chunks[x, y] == null)
+            chunks[x, y] = new BufferedFixedIndexArray<int>();
+    }
 
     BufferedFixedIndexArray<int>[,] chunks;
-    bool[,] isGenerated;
     BufferedFixedIndexArray<SurfaceObject> sObjects;
 
 
@@ -133,7 +130,6 @@ public class SurfaceChunkController
         xChunkCount = mapWidth / chunkSize + 1;
         lastXChunkWidth = mapWidth % chunkSize;
         chunks = new BufferedFixedIndexArray<int>[mapWidth / chunkSize + 1, mapHeight / chunkSize + 1];
-        isGenerated = new bool[mapWidth / chunkSize + 1, mapHeight / chunkSize + 1];
         //chunk 0: 0 ~ chunksize -1, chunk 1: chunksize ~ chunksize*2-1
     }
 
@@ -142,7 +138,7 @@ public class SurfaceChunkController
         if (chunks[x, y] == null)
             return false;
         else
-            return chunks[x, y].Updating.Count != 0;
+            return chunks[x, y].createdTime <= UpdateManager.UpdatingFrame;
     }
 
     /// <summary>
@@ -154,6 +150,7 @@ public class SurfaceChunkController
     public bool RegisterObject(int objectIdx)
     {
         SurfaceObject addObj = sObjects.GetUpdating(objectIdx);
+        //Debug.Log($"Registered Object #{objectIdx}({addObj.objectType}) at {addObj.postion}");
         if (CanPlaceObject(addObj) == false)
             return false;
 
@@ -169,7 +166,7 @@ public class SurfaceChunkController
             for (int yChunk = addObj.MinY / chunkSize; yChunk <= maxYChunk / chunkSize; ++yChunk)
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null)
-                    chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<int>();
+                    chunks[xChunk % xChunkCount, yChunk] = new BufferedFixedIndexArray<int>(); //UNDO IF CUNOT GENERATED ?
                 chunks[xChunk % xChunkCount, yChunk].Updating.Add(objectIdx);
             }
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Threading.Tasks;
@@ -37,7 +37,7 @@ public class UpdateManager : Singleton<UpdateManager>
 
     Task PrevFrameTask = null;
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         //InputManager.Instance.DoInput();
 
@@ -53,6 +53,7 @@ public class UpdateManager : Singleton<UpdateManager>
         } while (LockedFrame == UpdatingBuffer);
         //if saving is finished, gogogo
 
+        Debug.Log($"Buff state: {RenderedBuffer}, {RenderingBuffer}, {UpdatingBuffer}, {NextBuffer}");
         SurfaceManager.Instance.ProcessEvents();
 
         PrevFrameTask = SurfaceManager.Instance.DoUpdate();

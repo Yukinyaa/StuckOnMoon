@@ -162,6 +162,15 @@ public class FixedIndexArray<T> : IEnumerable<T>
                 action(ref array[i].element);
         }
     }
+    public void ForEach(Action<T, int> action)
+    {
+        T thisIdx;
+        for (int i = 0; i <= maxIndex; i++)
+        {
+            if (SafeGet(i, out thisIdx))
+                action(thisIdx, i);
+        }
+    }
     public void ForEach(Action<T> action)
     {
         T thisIdx;
