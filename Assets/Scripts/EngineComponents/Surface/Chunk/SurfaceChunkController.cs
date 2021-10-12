@@ -90,13 +90,14 @@ public class SurfaceChunkController
         int maxYChunk = argMax.y / chunkSize;
         int q = 0;
 
+        /*
         for (int xChunk = argMin.x / chunkSize; xChunk <= maxXChunk; ++xChunk)
         {
             for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null || chunks[xChunk % xChunkCount, yChunk].createdTime > UpdateManager.RenderingFrame)
                     continue;
-                chunks[xChunk % xChunkCount, yChunk].Updating.ForEach(aa =>
+                chunks[xChunk % xChunkCount, yChunk].Rendering.ForEach(aa =>
                 {
                     q++;
                     bool isRenderingFilled = sObjects.SafeGetRendering(aa, out var rendering);
@@ -108,6 +109,13 @@ public class SurfaceChunkController
                 });
             }
         }
+        *
+        */
+        sObjects.Rendering.ForEach((obj, idx) => {
+            action(obj, idx);
+            q++;       
+        });
+        
         Debug.Log($"Rendered {q} obejcts for frame #{UpdateManager.RenderingFrame}");
     }
 

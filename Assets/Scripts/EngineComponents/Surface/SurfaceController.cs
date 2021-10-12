@@ -51,35 +51,53 @@ public class SurfaceController
             if (ev is SurfaceGenerateMapEvent)
             {
                 SurfaceGenerateMapEvent sgme = ev as SurfaceGenerateMapEvent;
-                if (chunkController.IsGenerated(sgme.chunkNo.x, sgme.chunkNo.y))
-                    continue;
-                Debug.Log($"Generating Map {sgme.chunkNo.x}, {sgme.chunkNo.y}");
 
-                Debug.Assert(chunkController.ChunkExists(sgme.chunkNo.x, sgme.chunkNo.y) == false);
+                System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+                stopwatch.Start();
+                bool success = GenerateMap(sgme.chunkNo);
+                stopwatch.Stop();
+                if(success)
+                    Debug.Log($"Generatied Map {sgme.chunkNo.x}, {sgme.chunkNo.y}: {stopwatch.Elapsed.ToString()}");
 
-                int fromx = SurfaceChunkController.chunkSize * sgme.chunkNo.x;
-                int tox = Mathf.Min(SurfaceChunkController.chunkSize * (sgme.chunkNo.x + 1), chunkController.mapWidth);
 
-                int fromy = SurfaceChunkController.chunkSize * sgme.chunkNo.y;
-                int toy = SurfaceChunkController.chunkSize * (sgme.chunkNo.y + 1);
-                chunkController.SetGenerated(sgme.chunkNo.x, sgme.chunkNo.y);
-
-                for (int x = fromx; x < tox; x++)
-                {
-                    for (int y = fromy; y < toy; y++)
-                    {
-                        int blockNo = surfaceGen.SurfaceGenV0(x, y);
-                        if (blockNo != 0)
-                        {
-                            var sObject = new SurfaceObject(new Unity.Mathematics.int2(x, y), blockNo);
-                            int sObjIdx = surfaceObjects.Updating.Add(sObject);
-                            chunkController.RegisterObject(sObjIdx);
-                        }
-                        
-                    }
-                }
             }
         }
+    }
+
+    private bool GenerateMap(int2 chunkNo)
+    {
+        if (chunkController.ChunkExists(chunkNo.x, chunkNo.y))
+            return false;
+        //Debug.Log($"Generating Map {chunkNo.x}, {chunkNo.y}");
+
+        Debug.Assert(chunkController.ChunkExists(chunkNo.x, chunkNo.y) == false);
+
+        int fromx = SurfaceChunkController.chunkSize * chunkNo.x;
+        int tox = Mathf.Min(SurfaceChunkController.chunkSize * (chunkNo.x + 1), chunkController.mapWidth);
+
+        int fromy = SurfaceChunkController.chunkSize * chunkNo.y;
+        int toy = SurfaceChunkController.chunkSize * (chunkNo.y + 1);
+        chunkController.Generate(chunkNo.x, chunkNo.y);
+
+
+        int blkcnt = 0;
+        for (int x = fromx; x < tox; x++)
+        {
+            for (int y = fromy; y < toy; y++)
+            {
+                int blockNo = surfaceGen.SurfaceGenV0(x, y);
+                if (blockNo != 0)
+                {
+                    var sObject = new SurfaceObject(new int2(x, y), blockNo);
+                    int sObjIdx = surfaceObjects.Updating.Add(sObject);
+                    chunkController.RegisterObject(sObjIdx);
+                    blkcnt++;
+                }
+
+            }
+        }
+        Debug.Log($"Generated Map {chunkNo.x}, {chunkNo.y} (blkcnt : {blkcnt})");
+        return true;
     }
 
     public void PrepareNextFrame()
