@@ -39,10 +39,6 @@ public class BufferedFixedIndexArray<T>
     }
 
 
-    public void CopyFromRendering()
-    {
-        Rendering.CopyTo(Updating);
-    }
     public void CopyUpdateToNext()
     {
         Updating.CopyTo(NextUpdate);

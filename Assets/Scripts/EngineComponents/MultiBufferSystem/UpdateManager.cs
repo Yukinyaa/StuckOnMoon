@@ -41,6 +41,7 @@ public class UpdateManager : Singleton<UpdateManager>
     {
         //InputManager.Instance.DoInput();
 
+        Debug.Log(PrevFrameTask);
         PrevFrameTask?.Wait();
 
         ++UpdatingFrameNo;
@@ -51,7 +52,7 @@ public class UpdateManager : Singleton<UpdateManager>
         {
             UpdatingBuffer = (UpdatingBuffer + 1) % BufferCount;
         } while (LockedFrame == UpdatingBuffer);
-        //if saving is finished, gogogo
+        // if saving is finished unlock buffer here
 
         Debug.Log($"Buff state: {RenderedBuffer}, {RenderingBuffer}, {UpdatingBuffer}, {NextBuffer}");
         SurfaceManager.Instance.ProcessEvents();
@@ -59,7 +60,5 @@ public class UpdateManager : Singleton<UpdateManager>
         PrevFrameTask = SurfaceManager.Instance.DoUpdate();
 
         SurfaceManager.Instance.Render();
-
-
     }
 }

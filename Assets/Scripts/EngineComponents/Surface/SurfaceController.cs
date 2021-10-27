@@ -16,6 +16,7 @@ public class SurfaceController
     int surfaceNo;
     public int2 gridOffset;
 
+
     public string Name { get; private set; } = "nauvis";
 
     public SurfaceController(byte[] seed, int surfaceNo)
@@ -24,16 +25,27 @@ public class SurfaceController
         CreatedAt = UpdateManager.UpdatingFrameNo;
         surfaceObjects = new BufferedFixedIndexArray<SurfaceObject>();
         this.surfaceNo = surfaceNo;
-        chunkController = new SurfaceChunkController(surfaceObjects, surfaceNo);
-        var go = new GameObject($"{Name} Renderer");
         
+        chunkController = new SurfaceChunkController(surfaceObjects, surfaceNo);
+
+        var go = new GameObject($"{Name} Renderer");
         renderer = go.AddComponent<SurfaceRenderer>();
+
+
+        renderer.Init(chunkController.countX, chunkController.countY);
     }
 
+
+
+    List<SurfaceEvent> eventsToProcess;
     public void RegisterEvents(List<SurfaceEvent> events)
     {
-        Debug.Assert(events.TrueForAll(a => a.RegistedFrame == UpdateManager.UpdatingFrameNo || a.RegistedFrame == null));
-        foreach (var ev in events)
+        this.eventsToProcess = events;
+    }
+    public void ProcessEvents()
+    {
+        Debug.Assert(eventsToProcess.TrueForAll(a => a.RegistedFrame == UpdateManager.UpdatingFrameNo || a.RegistedFrame == null));
+        foreach (var ev in eventsToProcess)
         {
             if (ev is SurfacePlaceObjectEvent)
             {
@@ -56,7 +68,7 @@ public class SurfaceController
                 stopwatch.Start();
                 bool success = GenerateMap(sgme.chunkNo);
                 stopwatch.Stop();
-                if(success)
+                if (success)
                     Debug.Log($"Generatied Map {sgme.chunkNo.x}, {sgme.chunkNo.y}: {stopwatch.Elapsed.ToString()}");
 
 
@@ -122,7 +134,9 @@ public class SurfaceController
         }
 
         chunkController.UnknownChunkChunkInRange(rangeMin, rangeMax);
+        renderer.StartObjectUpdate();
         chunkController.ForEachLastObjectsInChunkRange(rangeMin, rangeMax, (obj, index) => renderer.UpdateObject(obj, index));
+        renderer.FinishObjectUpdate();
     }
 
     public Vector2 GridPositionAsWorldPosition(int2 gridPos)
@@ -141,8 +155,9 @@ public class SurfaceController
         return new int2(Mathf.FloorToInt(worldPos.x - gridOffset.x), Mathf.FloorToInt(worldPos.y - gridOffset.y));
 
     }
-    public JobHandle DoUpdate()
+    public void DoUpdate()
     {
+        ProcessEvents();
         /*
         NativeArray<JobHandle> prepairJobs =
             new NativeArray<JobHandle>(4,
@@ -169,6 +184,6 @@ public class SurfaceController
 
         //if done, calculate logistic movements
 
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
     }
 }

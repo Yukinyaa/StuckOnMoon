@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6483467009211921227}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.9847393, y: 10.520946, z: -2.7871304}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -45,8 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00707d88b5ed43245a7d144045cc7eff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sObjectType: 0
-  sprite: {fileID: 0}
+  sObjectType: 1
+  sprite: {fileID: 6483467009211921236}
 --- !u!212 &6483467009211921236
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -110,7 +110,7 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}

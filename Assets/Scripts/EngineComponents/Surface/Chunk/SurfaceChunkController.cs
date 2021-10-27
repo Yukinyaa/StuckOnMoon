@@ -23,6 +23,8 @@ public class SurfaceChunkController
     public string name = "nauvis";
     public float2 gridSize = new float2(0.5f, 0.5f);
 
+    public int countX => chunks.GetUpperBound(0) + 1;
+    public int countY => chunks.GetUpperBound(1) + 1;
 
 
     public bool IsViewed { get; private set; }
@@ -90,7 +92,7 @@ public class SurfaceChunkController
         int maxYChunk = argMax.y / chunkSize;
         int q = 0;
 
-        /*
+        
         for (int xChunk = argMin.x / chunkSize; xChunk <= maxXChunk; ++xChunk)
         {
             for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
@@ -101,21 +103,11 @@ public class SurfaceChunkController
                 {
                     q++;
                     bool isRenderingFilled = sObjects.SafeGetRendering(aa, out var rendering);
-                    bool isRenderedFilled = sObjects.SafeGetRendered(aa, out var rendered);
-                    if (isRenderingFilled != isRenderedFilled || rendering != rendered)
-                    {
-                        action(isRenderingFilled ? rendering : (SurfaceObject?)null, aa);
-                    }
+                    action(isRenderingFilled ? rendering : (SurfaceObject?)null, aa);
                 });
             }
         }
-        *
-        */
-        sObjects.Rendering.ForEach((obj, idx) => {
-            action(obj, idx);
-            q++;       
-        });
-        
+
         Debug.Log($"Rendered {q} obejcts for frame #{UpdateManager.RenderingFrame}");
     }
 

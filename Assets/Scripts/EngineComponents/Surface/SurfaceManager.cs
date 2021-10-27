@@ -39,7 +39,7 @@ public class SurfaceManager : Singleton<SurfaceManager>
     {
         return Task.Factory.StartNew( () =>
         {
-            var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.PrepareNextFrame(); });
+            var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.DoUpdate(); s.PrepareNextFrame(); });
             Task.WaitAll( tasks.ToArray() );
         });
     }
