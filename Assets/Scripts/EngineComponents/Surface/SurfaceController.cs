@@ -69,27 +69,27 @@ public class SurfaceController
                 bool success = GenerateMap(sgme.chunkNo);
                 stopwatch.Stop();
                 if (success)
-                    Debug.Log($"Generatied Map {sgme.chunkNo.x}, {sgme.chunkNo.y}: {stopwatch.Elapsed.ToString()}");
-
-
+                    Debug.Log($"Generated Map {sgme.chunkNo.x}, {sgme.chunkNo.y}: {stopwatch.Elapsed.ToString()}");
+                else
+                    Debug.Log($"{sgme.chunkNo.x}, {sgme.chunkNo.y}: {stopwatch.Elapsed.ToString()}");
             }
         }
     }
 
     private bool GenerateMap(int2 chunkNo)
     {
-        if (chunkController.ChunkExists(chunkNo.x, chunkNo.y))
+        if (chunkController.IsChunkGenerated(chunkNo.x, chunkNo.y))
             return false;
         //Debug.Log($"Generating Map {chunkNo.x}, {chunkNo.y}");
 
-        Debug.Assert(chunkController.ChunkExists(chunkNo.x, chunkNo.y) == false);
+        Debug.Assert(chunkController.IsChunkGenerated(chunkNo.x, chunkNo.y) == false);
 
         int fromx = SurfaceChunkController.chunkSize * chunkNo.x;
         int tox = Mathf.Min(SurfaceChunkController.chunkSize * (chunkNo.x + 1), chunkController.mapWidth);
 
         int fromy = SurfaceChunkController.chunkSize * chunkNo.y;
         int toy = SurfaceChunkController.chunkSize * (chunkNo.y + 1);
-        chunkController.Generate(chunkNo.x, chunkNo.y);
+        chunkController.MarkMapGenerated(chunkNo.x, chunkNo.y);
 
 
         int blkcnt = 0;
@@ -120,23 +120,25 @@ public class SurfaceController
     public void DoRender()
     {
         int2 rangeMin, rangeMax;
-        {
-            float chunkPreloadMargin = 0.1f;
-            
-            var resolution = Screen.currentResolution;
-            Vector2 resolution2 = new Vector2(resolution.width, resolution.height);
-
-            Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (  - chunkPreloadMargin), resolution2.y * (  - chunkPreloadMargin), 0));
-            Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (1 + chunkPreloadMargin), resolution2.y * (1 + chunkPreloadMargin), 0));
-
-            rangeMin = WorldPositionAsGridPosition(camMinWorldPoint);
-            rangeMax = WorldPositionAsGridPosition(camMaxWorldPoint);
-        }
+        GetScreenWorldResolutionWithPercentageMargin(out rangeMin, out rangeMax);
 
         chunkController.UnknownChunkChunkInRange(rangeMin, rangeMax);
         renderer.StartObjectUpdate();
         chunkController.ForEachLastObjectsInChunkRange(rangeMin, rangeMax, (obj, index) => renderer.UpdateObject(obj, index));
         renderer.FinishObjectUpdate();
+
+        void GetScreenWorldResolutionWithPercentageMargin(out int2 rangeMin, out int2 rangeMax)
+        {
+            float chunkPreloadMargin = 0.1f;
+
+            Vector2 resolution2 = new Vector2(Screen.width, Screen.height);
+
+            Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (-chunkPreloadMargin), resolution2.y * (-chunkPreloadMargin), 0));
+            Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (1 + chunkPreloadMargin), resolution2.y * (1 + chunkPreloadMargin), 0));
+
+            rangeMin = WorldPositionAsGridPosition(camMinWorldPoint);
+            rangeMax = WorldPositionAsGridPosition(camMaxWorldPoint);
+        }
     }
 
     public Vector2 GridPositionAsWorldPosition(int2 gridPos)

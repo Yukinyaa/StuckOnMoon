@@ -10,29 +10,28 @@ public class SurfaceRenderer : MonoBehaviour
     Vector3 blockOffset = new Vector3(0, 0, 0);
 
     Transform[,] chunks;
+    ChunkData[,] chunkData;
+    HashSet<int2> enabledChunks;
+    HashSet<int2> updatedChunks;
     struct ChunkData
     {
         public ulong lastUpdatedFrame;
         public bool forceUpdate;
     }
-    ChunkData[,] chunkData;
-    HashSet<int2> enabledChunks;
-
-    CompositeCollider2D ccolider;
 
     public void Init(int xChunkCount, int yChunkCount)
     {
         gameObjects = new List<SurfaceGameObject>();
-        InitalizeChunkObjects(xChunkCount, yChunkCount);
+        InitalizeChunks(xChunkCount, yChunkCount);
 
+        updatedChunks = new HashSet<int2>();
         enabledChunks = new HashSet<int2>();
     }
 
-    private void InitalizeChunkObjects(int xChunkCount, int yChunkCount)
+    private void InitalizeChunks(int xChunkCount, int yChunkCount)
     {
         chunks = new Transform[xChunkCount, yChunkCount];
         chunkData = new ChunkData[xChunkCount, yChunkCount];
-
         for (int x = 0; x < xChunkCount; x++)
         {
             for (int y = 0; y < yChunkCount; y++)
@@ -42,16 +41,15 @@ public class SurfaceRenderer : MonoBehaviour
                 go.name = $"chunk {x}, {y}";
                 go.transform.SetParent(this.transform);
 
-                ccolider = go.AddComponent<CompositeCollider2D>();
-                ccolider.generationType = CompositeCollider2D.GenerationType.Manual;
-                go.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-
+                go.SetActive(false);
             }
 
         }
     }
 
-    public void StartObjectUpdate() {}
+    public void StartObjectUpdate() {
+        updatedChunks.Clear();
+    }
 
 
     void ExpandObjectList(int index)
@@ -92,12 +90,17 @@ public class SurfaceRenderer : MonoBehaviour
 
         if (gameObjects[index] == null)
         {
-            gameObjects[index] = Instantiate(SurfaceGameObjectPrefabs.Instance[obj.Value.objectType], transform).GetComponent<SurfaceGameObject>();
+            gameObjects[index] = Instantiate(SurfaceGameObjectPrefabs.Instance[obj.Value.objectType], chunks[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY]).GetComponent<SurfaceGameObject>();
             gameObjects[index].name = $"go #{index}";
         }
 
-        gameObjects[index].UpdateMe(obj.Value);
-        gameObjects[index].transform.SetParent(chunks[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY]);
+        if (gameObjects[index].UpdateMe(obj.Value))
+        {
+            updatedChunks.Add(new int2(obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY));
+            gameObjects[index].transform.SetParent(chunks[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY]);
+        }
+        
+        
 
     }
 
@@ -110,8 +113,7 @@ public class SurfaceRenderer : MonoBehaviour
         foreach(var n in enabledChunks)
         {
             chunkData[n.x, n.y].forceUpdate = false;
-            chunks[n.x, n.y].GetComponent<CompositeCollider2D>().GenerateGeometry();
+            chunks[n.x, n.y].SetAsFirstSibling();
         }
-    
     }
 }

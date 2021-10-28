@@ -35,13 +35,10 @@ public class SurfaceManager : Singleton<SurfaceManager>
             surfaces.Add(new SurfaceController(new byte[] { 123, 45, 67 }, 0));
         }
     }
-    public Task PrepareFrame()
+    public void UpdateAllSurfaces()
     {
-        return Task.Factory.StartNew( () =>
-        {
-            var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.DoUpdate(); s.PrepareNextFrame(); });
-            Task.WaitAll( tasks.ToArray() );
-        });
+        var tasks = from SurfaceController s in surfaces select Task.Factory.StartNew(() => { s.DoUpdate(); s.PrepareNextFrame(); });
+        Task.WaitAll(tasks.ToArray());
     }
 
     public void Render()
@@ -56,10 +53,10 @@ public class SurfaceManager : Singleton<SurfaceManager>
         }
     }
 
-    public void ProcessEvents()
+    public void RegisterEventsToSurface()
     {
         var events = EventManager.Instance.PopEvents(UpdateManager.UpdatingFrameNo);
-
+        
 
         //process global event ex)chatting etc
 
@@ -67,8 +64,6 @@ public class SurfaceManager : Singleton<SurfaceManager>
         {
             surfaces.SafeGet(i, out var surface);
             surface.RegisterEvents(events.Where(a => a.SurfaceNo == i).ToList());
-
-            //can multithread idk
         }
     }
     // Update is called once per frame
@@ -78,9 +73,8 @@ public class SurfaceManager : Singleton<SurfaceManager>
         {
             UnityEngine.Profiling.Profiler.BeginThreadProfiling("Custom Update Threads", "Surfaces Update");
 
-
-            UnityEngine.Profiling.Profiler.BeginSample("PrepairNextFrame");
-            PrepareFrame().Wait();
+            UnityEngine.Profiling.Profiler.BeginSample("UpdateAllSurfaces");
+            UpdateAllSurfaces();
             UnityEngine.Profiling.Profiler.EndSample();
 
             UnityEngine.Profiling.Profiler.EndThreadProfiling();

@@ -77,7 +77,7 @@ public class SurfaceGen
         if (surfacePos > (Fix64)y)
             return 1;
         else
-            return 1;
+            return 0;
     }
 
     Fix64 ValAt(Fix64 x, Fix64 y, Fix64 z, Fix64 Scale)
