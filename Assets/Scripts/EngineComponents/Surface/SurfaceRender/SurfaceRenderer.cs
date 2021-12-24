@@ -51,6 +51,13 @@ public class SurfaceRenderer : MonoBehaviour
         updatedChunks.Clear();
     }
 
+    public void DoRender(IEnumerable<(SurfaceObject?, int)> renderObj)
+    {
+        StartObjectUpdate();
+        foreach ((var obj, int idx) in renderObj)
+            UpdateObject(obj, idx);
+        FinishObjectUpdate();
+    }
 
     void ExpandObjectList(int index)
     {
@@ -61,6 +68,7 @@ public class SurfaceRenderer : MonoBehaviour
                 gameObjects.Add(null);
         }
     }
+    
     public void UpdateObject(SurfaceObject? obj, int index)
     {
         ExpandObjectList(index);
@@ -116,4 +124,5 @@ public class SurfaceRenderer : MonoBehaviour
             chunks[n.x, n.y].SetAsFirstSibling();
         }
     }
+
 }

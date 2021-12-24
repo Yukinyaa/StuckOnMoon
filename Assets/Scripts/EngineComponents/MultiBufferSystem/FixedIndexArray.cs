@@ -180,6 +180,28 @@ public class FixedIndexArray<T> : IEnumerable<T>
                 action(thisIdx);
         }
     }
+
+
+    public System.Collections.Generic.IEnumerable<T> Iterator()
+    {
+        T thisIdx;
+        for (int i = 0; i <= maxIndex; i++)
+        {
+            if (SafeGet(i, out thisIdx))
+                yield return (thisIdx);
+        }
+    }
+
+    public System.Collections.Generic.IEnumerable<(T, int)> IteratorWithIndex()
+    {
+        T thisIdx;
+        for (int i = 0; i <= maxIndex; i++)
+        {
+            if (SafeGet(i, out thisIdx))
+                yield return (thisIdx, i);
+        }
+    }
+
     public bool Exists(Predicate<T> action)
     {
         T thisIdx;

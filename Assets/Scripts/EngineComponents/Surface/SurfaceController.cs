@@ -120,31 +120,19 @@ public class SurfaceController
     public void DoRender()
     {
         int2 rangeMin, rangeMax;
-        GetScreenWorldResolutionWithPercentageMargin(out rangeMin, out rangeMax);
+        GetScreenWorldResolutionWithMargin(out rangeMin, out rangeMax);
 
-        chunkController.UnknownChunkChunkInRange(rangeMin, rangeMax);
-        renderer.StartObjectUpdate();
-        chunkController.ForEachLastObjectsInChunkRange(rangeMin, rangeMax, (obj, index) => renderer.UpdateObject(obj, index));
-        renderer.FinishObjectUpdate();
-
-        void GetScreenWorldResolutionWithPercentageMargin(out int2 rangeMin, out int2 rangeMax)
-        {
-            float chunkPreloadMargin = 0.1f;
-
-            Vector2 resolution2 = new Vector2(Screen.width, Screen.height);
-
-            Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (-chunkPreloadMargin), resolution2.y * (-chunkPreloadMargin), 0));
-            Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (1 + chunkPreloadMargin), resolution2.y * (1 + chunkPreloadMargin), 0));
-
-            rangeMin = WorldPositionAsGridPosition(camMinWorldPoint);
-            rangeMax = WorldPositionAsGridPosition(camMaxWorldPoint);
-        }
+        chunkController.GenerateUnknownChunkChunkInRange(rangeMin, rangeMax);
+        var renderObj = chunkController.GetObjectsInChunkRangeItor(rangeMin, rangeMax);
+        renderer.DoRender(renderObj);;
     }
+
 
     public Vector2 GridPositionAsWorldPosition(int2 gridPos)
     {
         return new Vector2(gridPos.x + gridOffset.x, gridPos.y + gridOffset.y);
     }
+
     public int2 WorldPositionAsGridPosition(Vector2 worldPos)
     {
         return new int2(Mathf.FloorToInt((worldPos.x - gridOffset.x)), Mathf.FloorToInt(worldPos.y - gridOffset.y));
@@ -155,8 +143,21 @@ public class SurfaceController
         input.z = 0;
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(input);  //tip: rendering camera may not be main
         return new int2(Mathf.FloorToInt(worldPos.x - gridOffset.x), Mathf.FloorToInt(worldPos.y - gridOffset.y));
-
     }
+
+    private void GetScreenWorldResolutionWithMargin(out int2 rangeMin, out int2 rangeMax)
+    {
+        float chunkPreloadMarginRatio = 0.1f;
+
+        Vector2 resolution2 = new Vector2(Screen.width, Screen.height);
+
+        Vector2 camMinWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (-chunkPreloadMarginRatio), resolution2.y * (-chunkPreloadMarginRatio), 0));
+        Vector2 camMaxWorldPoint = Camera.main.ScreenToWorldPoint(new Vector3(resolution2.x * (1 + chunkPreloadMarginRatio), resolution2.y * (1 + chunkPreloadMarginRatio), 0));
+
+        rangeMin = WorldPositionAsGridPosition(camMinWorldPoint);
+        rangeMax = WorldPositionAsGridPosition(camMaxWorldPoint);
+    }
+
     public void DoUpdate()
     {
         ProcessEvents();

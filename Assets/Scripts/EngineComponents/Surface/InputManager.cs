@@ -63,7 +63,7 @@ class InputManager : Singleton<InputManager>
             SurfaceEvent placeObjEvent = 
                 new SurfacePlaceObjectEvent(SurfaceManager.Instance.ViewingSurfaceNo ?? SurfaceManager.Instance.CurrentSurfaceNo, objectOnHand, posArgumentedInt2);
 
-            EventManager.Instance.RegisterEvent(placeObjEvent);
+            EventManager.Instance.RegisterLocalEvent(placeObjEvent);
         }
 
 

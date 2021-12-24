@@ -76,7 +76,7 @@ public class SurfaceChunkController
             argMax.x += mapWidth;
     }
 
-    public void UnknownChunkChunkInRange(int2 argMin, int2 argMax)
+    public void GenerateUnknownChunkChunkInRange(int2 argMin, int2 argMax)
     {
         ArgumentVectorPair(ref argMin, ref argMax);
 
@@ -91,18 +91,14 @@ public class SurfaceChunkController
                 if (IsChunkGenerated(xChunk % xChunkCount, yChunk) == false)
                 {
                     Debug.Log($"ev: {xChunk % xChunkCount}, {yChunk}");
-                    EventManager.Instance.RegisterEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk % xChunkCount, yChunk)));
+                    EventManager.Instance.RegisterLocalEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk % xChunkCount, yChunk)));
                     return;
                 }
             }
         }
         return;
     }
-
-    /// <summary>
-    /// input: min/max pair of arb
-    /// </summary>
-    public void ForEachLastObjectsInChunkRange(int2 argMin, int2 argMax, Action<SurfaceObject?, int> action)
+    public IEnumerable<(SurfaceObject?, int)> GetObjectsInChunkRangeItor(int2 argMin, int2 argMax)
     {
         ArgumentVectorPair(ref argMin, ref argMax);
 
@@ -113,25 +109,24 @@ public class SurfaceChunkController
         int maxYChunk = argMax.y / chunkSize;
         int renderedObjectCount = 0, emptyObjectCount = 0;
 
-        
+
         for (int xChunk = argMin.x / chunkSize; xChunk <= maxXChunk; ++xChunk)
         {
             for (int yChunk = argMin.y / chunkSize; yChunk <= maxYChunk; ++yChunk)
             {
                 if (chunks[xChunk % xChunkCount, yChunk] == null || chunks[xChunk % xChunkCount, yChunk].createdTime > UpdateManager.RenderingFrame)
                     continue;
-                chunks[xChunk % xChunkCount, yChunk].Rendering.ForEach(aa =>
+                foreach (var aa in chunks[xChunk % xChunkCount, yChunk].Rendering.Iterator())
                 {
                     renderedObjectCount += 1;
                     bool isRenderingFilled = sObjects.SafeGetRendering(aa, out var rendering);
-                    action(isRenderingFilled ? rendering : (SurfaceObject?)null, aa);
+
+                    yield return (isRenderingFilled ? rendering : (SurfaceObject?)null, aa);
                     if (rendering.objectType == 0)
                         emptyObjectCount += 1;
-                });
+                }
             }
         }
-
-        Debug.Log($"Rendered {renderedObjectCount}({emptyObjectCount}) obejcts for frame #{UpdateManager.RenderingFrame}");
     }
 
     internal void MarkMapGenerated(int x, int y, bool forceReset = false)

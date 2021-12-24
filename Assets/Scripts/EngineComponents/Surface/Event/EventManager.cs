@@ -8,7 +8,7 @@ class EventManager : Singleton<EventManager>
 {
     SortedSet<SurfaceEvent> Events = new SortedSet<SurfaceEvent>(new SurfaceEventComparerByFrame());
 
-    public void RegisterEvent(SurfaceEvent s_event)
+    public void RegisterLocalEvent(SurfaceEvent s_event)
     {
         Events.Add(s_event);
     }

@@ -28,7 +28,8 @@ public class BufferedFixedIndexArray<T>
     {
         return arrays[RenderingBuffer].Get(index);
     }
-
+    public IEnumerable<T> RenderingIterator() => arrays[RenderingBuffer].Iterator();
+    public IEnumerable<(T,int)> RenderingIteratorWithIndex() => arrays[RenderingBuffer].IteratorWithIndex();
     public bool SafeGetRendering(int index, out T data)
     {
         return arrays[RenderingBuffer].SafeGet(index, out data);
@@ -37,7 +38,6 @@ public class BufferedFixedIndexArray<T>
     {
         return arrays[RenderedBuffer].SafeGet(index, out data);
     }
-
 
     public void CopyUpdateToNext()
     {
