@@ -101,33 +101,4 @@ public class SurfaceManager : Singleton<SurfaceManager>
         return new int2(Mathf.FloorToInt(worldPos.x - gridOffset.x), Mathf.FloorToInt(worldPos.y - gridOffset.y));
 
     }
-
-    void OnDrawGizmos()
-    {
-
-#if UNITY_EDITOR
-        if (isDrawGridGizmoEnabled)
-        {
-            for (int x = -4; x <= 4; x++)
-                for (int y = 0; y <= 8; y++)
-                {
-                    
-                    DebugExtension.DrawPoint(new Vector3(gridOffset.x + x, gridOffset.y + y));
-                    Handles.Label(new Vector3(gridOffset.x + (x + 0.5f), gridOffset.y + (y + 0.5f)), $"{(x<0?x+ surfaces?.SafeGet(CurrentSurfaceNo).chunkController.mapWidth:x)},{y}", GUIStyle.none);
-                }
-            DebugExtension.DrawArrow(Vector3.zero, new Vector3(1, 0), Color.red);
-            DebugExtension.DrawArrow(Vector3.zero, new Vector3(0, 1), Color.green);
-        }
-
-
-        if (isDrawBlockGizmoEnabled)
-        {
-            //surface1?.chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), SObjectTypes.sObjectTypes[o.objectType].name));// o.objectType.ToString()
-            surfaces?.SafeGet(CurrentSurfaceNo).chunkController?.ForEachObject(o => Handles.Label(new Vector3(o.postion.x + 0.5f, o.postion.y + 0.5f), o.ToString()));// o.objectType.ToString()
-            surfaces?.SafeGet(CurrentSurfaceNo).chunkController?.ForEachObject(o => DebugExtension.DrawBounds(
-                                new Bounds(o.Middle, new Vector2(o.shape.size.x, o.shape.size.y))
-                    ));// o.objectType.ToString()
-        }
-#endif
-    }
 }

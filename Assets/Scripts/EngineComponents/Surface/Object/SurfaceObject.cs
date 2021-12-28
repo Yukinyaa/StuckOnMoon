@@ -36,13 +36,16 @@ public struct SurfaceObject
 
     public int Width { get => shape.size.x; }
     public int Height { get => shape.size.y; }
+
+    public int2 MinAABBPos { get => new int2(postion.x, postion.y); }
     public int MinX { get => postion.x; }
     public int MinY { get => postion.y; }
+    public int2 MaxAABBPos { get => new int2(postion.x + shape.size.x, postion.y + shape.size.y); }
     public int MaxX { get => postion.x + shape.size.x; }
     public int MaxY { get => postion.y + shape.size.y; }
 
-    public int BelongsToChunkX => postion.x / SurfaceChunkController.chunkSize;
-    public int BelongsToChunkY => postion.y / SurfaceChunkController.chunkSize;
+    public int BelongsToChunkX => postion.x / SurfaceObejctsController.chunkSize;
+    public int BelongsToChunkY => postion.y / SurfaceObejctsController.chunkSize;
 
 
     public float MidX { get => postion.x + shape.size.x / 2f; }

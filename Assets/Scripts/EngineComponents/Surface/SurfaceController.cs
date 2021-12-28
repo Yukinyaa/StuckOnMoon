@@ -8,14 +8,13 @@ using UnityEngine;
 public class SurfaceController
 {
     ulong CreatedAt;
-    public  //should delet
-        SurfaceChunkController chunkController;
-    BufferedFixedIndexArray<SurfaceObject> surfaceObjects;
+    SurfaceObejctsController sObjectsController;
     SurfaceGen surfaceGen;
     SurfaceRenderer renderer;
     int surfaceNo;
     public int2 gridOffset;
 
+    public int MapWidth { get => sObjectsController.mapWidth; }
 
     public string Name { get; private set; } = "nauvis";
 
@@ -23,16 +22,15 @@ public class SurfaceController
     {
         surfaceGen = new SurfaceGen(seed);
         CreatedAt = UpdateManager.UpdatingFrameNo;
-        surfaceObjects = new BufferedFixedIndexArray<SurfaceObject>();
         this.surfaceNo = surfaceNo;
         
-        chunkController = new SurfaceChunkController(surfaceObjects, surfaceNo);
+        sObjectsController = new SurfaceObejctsController(surfaceNo);
 
         var go = new GameObject($"{Name} Renderer");
         renderer = go.AddComponent<SurfaceRenderer>();
 
 
-        renderer.Init(chunkController.countX, chunkController.countY);
+        renderer.Init(sObjectsController.countX, sObjectsController.countY);
     }
 
 
@@ -52,11 +50,8 @@ public class SurfaceController
                 SurfacePlaceObjectEvent spoe = ev as SurfacePlaceObjectEvent;
 
 
-                chunkController.CanPlaceObject(spoe.position, spoe.blockType);
-
-                SurfaceObject newObject = new SurfaceObject(spoe.position, spoe.blockType);
-                int newObjectIndex = surfaceObjects.Updating.Add(newObject);
-                chunkController.RegisterObject(newObjectIndex);
+                sObjectsController.CanPlaceObject(spoe.position, spoe.blockType);
+                bool success = sObjectsController.TryPlaceObject(spoe.position, spoe.blockType,out int newObjectIndex);
 
                 //SurfaceEvent
             }
@@ -78,18 +73,18 @@ public class SurfaceController
 
     private bool GenerateMap(int2 chunkNo)
     {
-        if (chunkController.IsChunkGenerated(chunkNo.x, chunkNo.y))
+        if (sObjectsController.IsChunkGenerated(chunkNo.x, chunkNo.y))
             return false;
         //Debug.Log($"Generating Map {chunkNo.x}, {chunkNo.y}");
 
-        Debug.Assert(chunkController.IsChunkGenerated(chunkNo.x, chunkNo.y) == false);
+        Debug.Assert(sObjectsController.IsChunkGenerated(chunkNo.x, chunkNo.y) == false);
 
-        int fromx = SurfaceChunkController.chunkSize * chunkNo.x;
-        int tox = Mathf.Min(SurfaceChunkController.chunkSize * (chunkNo.x + 1), chunkController.mapWidth);
+        int fromx = SurfaceObejctsController.chunkSize * chunkNo.x;
+        int tox = Mathf.Min(SurfaceObejctsController.chunkSize * (chunkNo.x + 1), sObjectsController.mapWidth);
 
-        int fromy = SurfaceChunkController.chunkSize * chunkNo.y;
-        int toy = SurfaceChunkController.chunkSize * (chunkNo.y + 1);
-        chunkController.MarkMapGenerated(chunkNo.x, chunkNo.y);
+        int fromy = SurfaceObejctsController.chunkSize * chunkNo.y;
+        int toy = SurfaceObejctsController.chunkSize * (chunkNo.y + 1);
+        sObjectsController.MarkMapGenerated(chunkNo.x, chunkNo.y);
 
 
         int blkcnt = 0;
@@ -100,10 +95,9 @@ public class SurfaceController
                 int blockNo = surfaceGen.SurfaceGenV0(x, y);
                 if (blockNo != 0)
                 {
-                    var sObject = new SurfaceObject(new int2(x, y), blockNo);
-                    int sObjIdx = surfaceObjects.Updating.Add(sObject);
-                    chunkController.RegisterObject(sObjIdx);
-                    blkcnt++;
+                    var success = sObjectsController.TryPlaceObject(new int2(x, y), blockNo, out _);
+                    if (success)
+                        blkcnt++;
                 }
 
             }
@@ -114,16 +108,15 @@ public class SurfaceController
 
     public void PrepareNextFrame()
     {
-        surfaceObjects.CopyUpdateToNext();
-        chunkController.PrepareNextFrame();
+        sObjectsController.PrepareNextFrame();
     }
     public void DoRender()
     {
         int2 rangeMin, rangeMax;
         GetScreenWorldResolutionWithMargin(out rangeMin, out rangeMax);
 
-        chunkController.GenerateUnknownChunkChunkInRange(rangeMin, rangeMax);
-        var renderObj = chunkController.GetObjectsInChunkRangeItor(rangeMin, rangeMax);
+        sObjectsController.GenerateUnknownChunkChunkInRange(rangeMin, rangeMax);
+        var renderObj = sObjectsController.GetRenderingObjectsInChunkRangeItor(rangeMin, rangeMax);
         renderer.DoRender(renderObj);;
     }
 
@@ -161,16 +154,7 @@ public class SurfaceController
     public void DoUpdate()
     {
         ProcessEvents();
-        /*
-        NativeArray<JobHandle> prepairJobs =
-            new NativeArray<JobHandle>(4,
-                SurfaceFluidManager.RunPrepairJob(), //simply copy amounts
-                SurfaceGasManager.RunPrepairJob(),   //simply copy amounts 
-                SurfaceSTransportManager.RunPrepairJob(), //simply copy amounts
-                SurfaceElectricityManager.RunPrepairJob() //sum(active producers) / sum(active consumers)
-            );
 
-        //*/
 
 
 
@@ -186,7 +170,15 @@ public class SurfaceController
 
 
         //if done, calculate logistic movements
+        /*
+        NativeArray<JobHandle> prepairJobs =
+            new NativeArray<JobHandle>(4,
+                SurfaceFluidManager.RunPrepairJob(), //simply copy amounts
+                SurfaceGasManager.RunPrepairJob(),   //simply copy amounts 
+                SurfaceSTransportManager.RunPrepairJob(), //simply copy amounts
+                SurfaceElectricityManager.RunPrepairJob() //sum(active producers) / sum(active consumers)
+            );
 
-        //throw new System.NotImplementedException();
+        //*/
     }
 }

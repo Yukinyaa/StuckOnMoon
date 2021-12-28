@@ -55,10 +55,10 @@ class InputManager : Singleton<InputManager>
         {
             int2 posArgumentedInt2 = new int2(posArgumented);
 
-            Debug.Assert(SurfaceManager.Instance.ViewingSurface.chunkController.mapWidth != 0);
+            Debug.Assert(SurfaceManager.Instance.ViewingSurface.MapWidth != 0);
 
             while (posArgumentedInt2.x < 0)
-                posArgumentedInt2.x += SurfaceManager.Instance.ViewingSurface.chunkController.mapWidth;
+                posArgumentedInt2.x += SurfaceManager.Instance.ViewingSurface.MapWidth;
 
             SurfaceEvent placeObjEvent = 
                 new SurfacePlaceObjectEvent(SurfaceManager.Instance.ViewingSurfaceNo ?? SurfaceManager.Instance.CurrentSurfaceNo, objectOnHand, posArgumentedInt2);
