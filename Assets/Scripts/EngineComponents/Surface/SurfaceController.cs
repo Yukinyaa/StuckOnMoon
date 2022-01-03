@@ -29,7 +29,6 @@ public class SurfaceController
         var go = new GameObject($"{Name} Renderer");
         renderer = go.AddComponent<SurfaceRenderer>();
 
-
         renderer.Init(sObjectsController.countX, sObjectsController.countY);
     }
 
@@ -48,9 +47,6 @@ public class SurfaceController
             if (ev is SurfacePlaceObjectEvent)
             {
                 SurfacePlaceObjectEvent spoe = ev as SurfacePlaceObjectEvent;
-
-
-                sObjectsController.CanPlaceObject(spoe.position, spoe.blockType);
                 bool success = sObjectsController.TryPlaceObject(spoe.position, spoe.blockType,out int newObjectIndex);
 
                 //SurfaceEvent

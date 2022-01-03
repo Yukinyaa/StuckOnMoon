@@ -89,17 +89,23 @@ public class SurfaceObejctsController
     }
 
     // Euclidian mod.
-    int EucMod(int k, int n) { return ((k %= n) < 0) ? k + n : k; }
+    int EucMod(int k, int n)
+    {
+        if (k < 0)
+            return (k % n) + n;
+        else
+            return k % n;
+    }
 
 
     public void GenerateUnknownChunkChunkInRange(int2 min, int2 max)
     {
         foreach( (int xChunk, int yChunk) in ChunkRange(min, max))
         {
-            if (IsChunkGenerated(xChunk % xChunkCount, yChunk) == false)
+            if (IsChunkGenerated(xChunk, yChunk) == false)
             {
-                Debug.Log($"ev: {xChunk % xChunkCount}, {yChunk}");
-                EventManager.Instance.RegisterLocalEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk % xChunkCount, yChunk)));
+                Debug.Log($"ev: {xChunk}, {yChunk}");
+                EventManager.Instance.RegisterLocalEvent(new SurfaceGenerateMapEvent(surfaceNo, new int2(xChunk, yChunk)));
                 return;
             }
         }
@@ -108,9 +114,9 @@ public class SurfaceObejctsController
     {
         foreach((int xChunk, int yChunk) in ChunkRange(min, max))
         {
-            if (chunks[xChunk % xChunkCount, yChunk] == null || chunks[xChunk % xChunkCount, yChunk].createdTime > UpdateManager.RenderingFrame)
+            if (chunks[xChunk, yChunk] == null || chunks[xChunk, yChunk].createdTime > UpdateManager.RenderingFrame)
                 continue;
-            foreach (var aa in chunks[xChunk % xChunkCount, yChunk].Rendering.Iterator())
+            foreach (var aa in chunks[xChunk, yChunk].Rendering.Iterator())
             {
                 bool isnull = sObjects.SafeGetRendering(aa, out var rendering);
 
@@ -160,7 +166,7 @@ public class SurfaceObejctsController
         foreach( (int xChunk, int yChunk) in ChunkRange( newObject.MinAABBPos, newObject.MaxAABBPos ))
         {
             if (chunks[xChunk , yChunk] == null)
-                chunks[xChunk , yChunk] = new BufferedFixedIndexArray<int>(); //UNDO IF CUNOT GENERATED ?
+                chunks[xChunk , yChunk] = new BufferedFixedIndexArray<int>(); // UNDO IF CUNOT GENERATED ?
             chunks[xChunk, yChunk].Updating.Add(newObjectIndex);
         }
         return true;
@@ -184,7 +190,7 @@ public class SurfaceObejctsController
     {
         foreach ((int xChunk, int yChunk) in ChunkRange(addObj.MinAABBPos, addObj.MaxAABBPos))
         {
-            if (chunks[xChunk % xChunkCount, yChunk] != null && chunks[xChunk % xChunkCount, yChunk].Updating.Exists(obj => sObjects.GetUpdating(obj).IsCollideWith(addObj)))
+            if (chunks[xChunk, yChunk] != null && chunks[xChunk, yChunk].Updating.Exists(obj => sObjects.GetUpdating(obj).IsCollideWith(addObj)))
                 return false;
         }
         return true;
