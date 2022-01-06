@@ -11,12 +11,12 @@ public static class SObjectTypes
     {
         if (isInitalized) return;
         isInitalized = true;
-        List<SObjectType> tmp = new List<SObjectType>(3);//todo: build from file
-        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(0, 0), layer = 0b000 }, name = "none" });
-        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(1, 1), layer = 0b011 }, name = "stone" });
-        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(1, 1), layer = 0b011 }, name = "dirt" });
-        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(2, 2), layer = 0b011 }, name = "bigStuff1" });
-        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(3, 3), layer = 0b011 }, name = "bigStuff2" });
+        List<SObjectType> tmp = new List<SObjectType>(3);//todo: build from file 
+        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(0, 0), layer = Layer.None }, name = "none" });
+        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(1, 1), layer = Layer.Block }, name = "stone" });
+        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(1, 1), layer = Layer.Block }, name = "dirt" }); 
+        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(2, 2), layer = Layer.SpriteOnly }, name = "bigStuff1" });
+        tmp.Add(new SObjectType() { shape = new SObejctShape() { size = new int2(3, 3), layer = Layer.SpriteOnly }, name = "bigStuff2" });
         sObjectTypes = tmp.AsReadOnly();
     }
 

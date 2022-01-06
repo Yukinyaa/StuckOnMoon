@@ -23,10 +23,9 @@ public class SurfaceObejctsController
     public string name = "nauvis";
     public float2 gridSize = new float2(0.5f, 0.5f);
 
-    BufferedFixedIndexArray<int>[,] chu;
-
     BufferedFixedIndexArray<int>[,] chunks;
     BufferedFixedIndexArray<SurfaceObject> sObjects;
+    BufferedReference<int[]>[,] sBlocks;
 
     bool[,] isGenerated;
 
@@ -166,7 +165,7 @@ public class SurfaceObejctsController
         foreach( (int xChunk, int yChunk) in ChunkRange( newObject.MinAABBPos, newObject.MaxAABBPos ))
         {
             if (chunks[xChunk , yChunk] == null)
-                chunks[xChunk , yChunk] = new BufferedFixedIndexArray<int>(); // UNDO IF CUNOT GENERATED ?
+                chunks[xChunk , yChunk] = new BufferedFixedIndexArray<int>(); // UNDO IF CHUNK NOT GENERATED?
             chunks[xChunk, yChunk].Updating.Add(newObjectIndex);
         }
         return true;
@@ -179,19 +178,14 @@ public class SurfaceObejctsController
             return false;
         return true;
     }
-    public void ForEachObject(Action<SurfaceObject> action)
-    {
-        foreach ( var a in chunks)
-        {
-            a?.Updating.ForEach(aa=>action(sObjects.GetUpdating(aa)));
-        }
-    }
+
     public bool CanPlaceObject(SurfaceObject addObj)
     {
         foreach ((int xChunk, int yChunk) in ChunkRange(addObj.MinAABBPos, addObj.MaxAABBPos))
         {
-            if (chunks[xChunk, yChunk] != null && chunks[xChunk, yChunk].Updating.Exists(obj => sObjects.GetUpdating(obj).IsCollideWith(addObj)))
-                return false;
+            if (chunks[xChunk, yChunk] != null)
+                if(chunks[xChunk, yChunk].Updating.Exists(obj =>sObjects.GetUpdating(obj).IsCollideWith(addObj)))
+                    return false;
         }
         return true;
     }

@@ -1,9 +1,46 @@
-﻿using Unity.Mathematics;
+﻿using System;
+using Unity.Mathematics;
 
-//used by chunk
+
+
+[Flags]
+public enum Layer
+{
+    None = 0,
+    CollisionOnly = 1,
+    SpriteOnly = 2,
+    Block = 3,
+    BackgroundOnly = 4
+}
+
 public struct SObejctShape
 {
     public int2 size;
-    public int layer;// bitmask idk , 1(collision),2(building),4(background)
-    //public Vector2Int[,] shape;// if null, then full rectangle shape
+    public Layer layer;// bitmask idk , 1(collision),2(building),4(background)
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null) return false;
+        if (!(obj is SObejctShape))
+            return false;
+        SObejctShape other = (SObejctShape)obj;
+
+        if (size.x != other.size.x) return false;
+        if (size.y != other.size.y) return false;
+        if (layer != other.layer) return false;
+
+        return true;
+    }
+
+    public bool Equals(SObejctShape other)
+    {
+        if (size.x != other.size.x) return false;
+        if (size.y != other.size.y) return false;
+        if (layer != other.layer) return false;
+
+        return true;
+    }
+
+    static public SObejctShape Block => new SObejctShape() { size = new int2(1, 1), layer = Layer.Block };
+    static public SObejctShape Background => new SObejctShape() { size = new int2(1, 1), layer = Layer.BackgroundOnly };
 }
