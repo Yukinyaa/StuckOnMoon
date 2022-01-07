@@ -7,7 +7,7 @@ using static UpdateManager;
 
 public class BufferedFixedIndexArray<T>
 {
-    FixedIndexArray<T>[] arrays = new FixedIndexArray<T>[UpdateManager.BufferCount];
+    PaddedRefBuffer<FixedIndexArray<T>> arrays = new PaddedRefBuffer<FixedIndexArray<T>>();
     #region get/setters
     
     public T GetUpdating(int index)

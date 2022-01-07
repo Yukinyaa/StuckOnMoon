@@ -60,6 +60,11 @@ public class FixedIndexArray<T> : IEnumerable<T>
         return true;
     }
 
+    internal void Remove(int objID)
+    {
+        throw new NotImplementedException();
+    }
+
     public void SafeSet(int index, in T value)
     {
         if (array[index].nextFreeIndex == -1)

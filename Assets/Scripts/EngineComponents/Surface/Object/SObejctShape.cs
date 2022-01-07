@@ -40,6 +40,14 @@ public struct SObejctShape
 
         return true;
     }
+    static public bool operator ==(SObejctShape a, SObejctShape b)
+    {
+        return a.Equals(b);
+    }
+    static public bool operator !=(SObejctShape a, SObejctShape b)
+    {
+        return !a.Equals(b);
+    }
 
     static public SObejctShape Block => new SObejctShape() { size = new int2(1, 1), layer = Layer.Block };
     static public SObejctShape Background => new SObejctShape() { size = new int2(1, 1), layer = Layer.BackgroundOnly };

@@ -14,22 +14,27 @@ public class SurfaceController
     int surfaceNo;
     public int2 gridOffset;
 
-    public int MapWidth { get => sObjectsController.mapWidth; }
+    public int MapWidth { get => sObjectsController.GetSurfaceInfo.width; }
 
     public string Name { get; private set; } = "nauvis";
-
+    SurfaceInfo surfaceInfo;
     public SurfaceController(byte[] seed, int surfaceNo)
     {
         surfaceGen = new SurfaceGen(seed);
         CreatedAt = UpdateManager.UpdatingFrameNo;
         this.surfaceNo = surfaceNo;
-        
-        sObjectsController = new SurfaceObejctsController(surfaceNo);
+
+        surfaceInfo.surfaceNo = surfaceNo;
+        surfaceInfo.width = 4200;
+        surfaceInfo.height = 1200;
+
+        sObjectsController = new SurfaceObejctsController(surfaceInfo);
 
         var go = new GameObject($"{Name} Renderer");
         renderer = go.AddComponent<SurfaceRenderer>();
 
-        renderer.Init(sObjectsController.countX, sObjectsController.countY);
+        renderer.Init(SurfaceChunkController.XChunkCountFromSurfaceInfo(surfaceInfo),
+                        SurfaceChunkController.YChunkCountFromSurfaceInfo(surfaceInfo));
     }
 
 
@@ -75,11 +80,11 @@ public class SurfaceController
 
         Debug.Assert(sObjectsController.IsChunkGenerated(chunkNo.x, chunkNo.y) == false);
 
-        int fromx = SurfaceObejctsController.chunkSize * chunkNo.x;
-        int tox = Mathf.Min(SurfaceObejctsController.chunkSize * (chunkNo.x + 1), sObjectsController.mapWidth);
+        int fromx = SurfaceChunkController.chunkSize * chunkNo.x;
+        int tox = Mathf.Min(SurfaceChunkController.chunkSize * (chunkNo.x + 1), surfaceInfo.width);
 
-        int fromy = SurfaceObejctsController.chunkSize * chunkNo.y;
-        int toy = SurfaceObejctsController.chunkSize * (chunkNo.y + 1);
+        int fromy = SurfaceChunkController.chunkSize * chunkNo.y;
+        int toy = SurfaceChunkController.chunkSize * (chunkNo.y + 1);
         sObjectsController.MarkMapGenerated(chunkNo.x, chunkNo.y);
 
 

@@ -44,8 +44,8 @@ public struct SurfaceObject
     public int MaxX { get => postion.x + shape.size.x; }
     public int MaxY { get => postion.y + shape.size.y; }
 
-    public int BelongsToChunkX => postion.x / SurfaceObejctsController.chunkSize;
-    public int BelongsToChunkY => postion.y / SurfaceObejctsController.chunkSize;
+    public int BelongsToChunkX => postion.x / SurfaceChunkController.chunkSize;
+    public int BelongsToChunkY => postion.y / SurfaceChunkController.chunkSize;
 
 
     public float MidX { get => postion.x + shape.size.x / 2f; }
