@@ -1,6 +1,6 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
-
+using static MathExtension;
 
 public struct SurfaceObject
 {
@@ -46,6 +46,9 @@ public struct SurfaceObject
 
     public int BelongsToChunkX => postion.x / SurfaceChunkController.chunkSize;
     public int BelongsToChunkY => postion.y / SurfaceChunkController.chunkSize;
+
+    public int ChunkLocalPosX => EucMod(postion.x, SurfaceChunkController.chunkSize);
+    public int ChunkLocalPosY => EucMod(postion.y, SurfaceChunkController.chunkSize);
 
 
     public float MidX { get => postion.x + shape.size.x / 2f; }

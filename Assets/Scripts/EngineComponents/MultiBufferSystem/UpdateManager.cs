@@ -52,7 +52,7 @@ public class UpdateManager : Singleton<UpdateManager>
         } while (LockedFrame == UpdatingBuffer);
         // if saving is finished unlock buffer here
 
-        Debug.Log($"Buff state: {RenderedBuffer}, {RenderingBuffer}, {UpdatingBuffer}, {NextBuffer}");
+        // Debug.Log($"Buff state: {RenderedBuffer}, {RenderingBuffer}, {UpdatingBuffer}, {NextBuffer}");
         SurfaceManager.Instance.RegisterEventsToSurface();
 
         PrevFrameTask = SurfaceManager.Instance.DoUpdate();

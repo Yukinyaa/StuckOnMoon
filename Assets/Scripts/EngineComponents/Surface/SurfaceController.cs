@@ -118,7 +118,8 @@ public class SurfaceController
 
         sObjectsController.GenerateUnknownChunkChunkInRange(rangeMin, rangeMax);
         var renderObj = sObjectsController.GetRenderingObjectsInChunkRangeItor(rangeMin, rangeMax);
-        renderer.DoRender(renderObj);;
+        var renderBlk = sObjectsController.GetRenderingBlocksInChunkRangeItor(rangeMin, rangeMax);
+        renderer.DoRender(renderObj, renderBlk);
     }
 
 

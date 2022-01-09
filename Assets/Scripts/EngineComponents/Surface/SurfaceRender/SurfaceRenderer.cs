@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
+using static MathExtension;
 
 public class SurfaceRenderer : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class SurfaceRenderer : MonoBehaviour
     {
         public ulong lastUpdatedFrame;
         public bool forceUpdate;
+        public SurfaceGameObject[,] blocks;
     }
 
     public void Init(int xChunkCount, int yChunkCount)
@@ -38,6 +40,7 @@ public class SurfaceRenderer : MonoBehaviour
             {
                 GameObject go = new GameObject();
                 chunks[x, y] = go.transform;
+                chunkData[x, y].blocks = new SurfaceGameObject[SurfaceChunkController.chunkSize, SurfaceChunkController.chunkSize];
                 go.name = $"chunk {x}, {y}";
                 go.transform.SetParent(this.transform);
 
@@ -51,11 +54,13 @@ public class SurfaceRenderer : MonoBehaviour
         updatedChunks.Clear();
     }
 
-    public void DoRender(IEnumerable<(SurfaceObject?, int)> renderObj)
+    public void DoRender(IEnumerable<(SurfaceObject?, int)> renderObj, IEnumerable<SurfaceObject> renderBlock)
     {
         StartObjectUpdate();
         foreach ((var obj, int idx) in renderObj)
             UpdateObject(obj, idx);
+        foreach (var obj in renderBlock)
+            UpdateBlock(obj);
         FinishObjectUpdate();
     }
 
@@ -68,18 +73,52 @@ public class SurfaceRenderer : MonoBehaviour
                 gameObjects.Add(null);
         }
     }
-    
+    public void UpdateBlock(SurfaceObject objData)
+    {
+        var chunkID = new int2(objData.BelongsToChunkX, objData.BelongsToChunkY);
+        var chunkLocalX = objData.ChunkLocalPosX;
+        var chunkLocalY = objData.ChunkLocalPosY;
+
+        
+
+        SetChunkAsUpdated(chunkID);
+
+        SurfaceGameObject go = chunkData[chunkID.x, chunkID.y].blocks[chunkLocalX, chunkLocalY];
+
+        if (objData.objectType == 0)
+        {
+            if (go != null)
+            {
+                Destroy(go);
+            }
+            return;
+        }
+
+        if (go != null && (go.sObjectType != objData.objectType))
+        {
+            Destroy(go.gameObject);
+        }
+
+        if (go == null)
+        {
+            go = chunkData[chunkID.x, chunkID.y].blocks[chunkLocalX, chunkLocalY] 
+                = Instantiate(SurfaceGameObjectPrefabs.Instance[objData.objectType], chunks[objData.BelongsToChunkX, objData.BelongsToChunkY]).GetComponent<SurfaceGameObject>();
+            go.name = $"block #[{chunkLocalX}, {chunkLocalY}@{chunkID}]";
+        }
+
+        if (go.UpdateMe(objData))
+        {
+            updatedChunks.Add(chunkID);
+            //go.transform.SetParent(chunks[objData.Value.BelongsToChunkX, objData.Value.BelongsToChunkY]);
+        }
+
+
+
+    }
     public void UpdateObject(SurfaceObject? obj, int index)
     {
         ExpandObjectList(index);
-
-        if (enabledChunks.Add(new int2(obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY)))
-        {
-            chunkData[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY].forceUpdate = true;
-            chunks[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY].gameObject.SetActive(true);
-        }
-        chunkData[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY].lastUpdatedFrame = UpdateManager.UpdatingFrameNo;
-
+        
         if (obj == null || obj.Value.objectType == 0)
         {
             if (gameObjects[index] != null)
@@ -89,7 +128,7 @@ public class SurfaceRenderer : MonoBehaviour
             return;
         }
 
-
+        SetChunkAsUpdated(new int2(obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY));
 
         if (gameObjects[index] != null && (gameObjects[index].sObjectType != obj.Value.objectType))
         {
@@ -107,9 +146,19 @@ public class SurfaceRenderer : MonoBehaviour
             updatedChunks.Add(new int2(obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY));
             gameObjects[index].transform.SetParent(chunks[obj.Value.BelongsToChunkX, obj.Value.BelongsToChunkY]);
         }
-        
-        
 
+
+
+    }
+
+    private void SetChunkAsUpdated(int2 pos)
+    {
+        if (enabledChunks.Add(pos))
+        {
+            chunkData[pos.x, pos.y].forceUpdate = true;
+            chunks[pos.x, pos.y].gameObject.SetActive(true);
+        }
+        chunkData[pos.x, pos.y].lastUpdatedFrame = UpdateManager.UpdatingFrameNo;
     }
 
     public void FinishObjectUpdate()

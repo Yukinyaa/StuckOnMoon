@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
-
+using static MathExtension;
 public class SurfaceChunkController
 {
     public const int chunkSize = 16;
@@ -130,15 +130,6 @@ public class SurfaceChunkController
         else return true;
     }
 
-
-    // Euclidian mod.
-    int EucMod(int k, int n)
-    {
-        if (k < 0)
-            return (k % n) + n;
-        else
-            return k % n;
-    }
     /// <summary>
     /// input: min/max pair of arbiraty points
     /// modify to match argmin>argmax, argmin/argmax.x > 0

@@ -70,7 +70,13 @@ public class SurfaceObejctsController
             yield return (isSucess ? rendering : (SurfaceObject?)null, oID);
         }
     }
-
+    public IEnumerable<SurfaceObject> GetRenderingBlocksInChunkRangeItor(int2 min, int2 max)
+    {
+        foreach (var obj in chunkController.GetBlockInRange(min, max))
+        {
+            yield return obj;
+        }
+    }
 
     /// <summary>
     /// 
@@ -86,8 +92,15 @@ public class SurfaceObejctsController
         if (CanPlaceObject(newObject) == false)
             return false;
 
-        newObjectID = sObjects.Updating.Add(newObject);
-        chunkController.RegisterObject(newObject, newObjectID);
+        if (newObject.shape == SObejctShape.Block)
+        {
+            chunkController.RegisterBlock(newObject);
+        }
+        else
+        {
+            newObjectID = sObjects.Updating.Add(newObject);
+            chunkController.RegisterObject(newObject, newObjectID);
+        }
         
         return true;
     }
