@@ -103,7 +103,7 @@ public class SurfaceRenderer : MonoBehaviour
         {
             go = chunkData[chunkID.x, chunkID.y].blocks[chunkLocalX, chunkLocalY] 
                 = Instantiate(SurfaceGameObjectPrefabs.Instance[objData.objectType], chunks[objData.BelongsToChunkX, objData.BelongsToChunkY]).GetComponent<SurfaceGameObject>();
-            go.name = $"block #[{chunkLocalX}, {chunkLocalY}@{chunkID}]";
+            go.name = $"block [{chunkLocalX}, {chunkLocalY}] @chk[{chunkID.x}, {chunkID.y}]";
         }
 
         if (go.UpdateMe(objData))
