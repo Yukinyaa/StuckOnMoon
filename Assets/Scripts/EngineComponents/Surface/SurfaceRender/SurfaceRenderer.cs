@@ -69,7 +69,7 @@ public class SurfaceRenderer : MonoBehaviour
         }
         ghost = Instantiate(objPF).GetComponent<SurfaceGameObject>();
         ghost.name = "ghost";
-        ghost.transform.SetAsFirstSibling();
+        ghost.transform.SetAsLastSibling();
 
 
         ghost.UpdateMe(objData);
@@ -78,10 +78,10 @@ public class SurfaceRenderer : MonoBehaviour
         switch (status)
         {
             case GhostStatus.Collision: //red
-                color.r *= 1f; color.g *= .5f; color.b *= .5f;
+                color.r *= 1f; color.g *= 0f; color.b *= 0f;
                 break;
             case GhostStatus.AlreadyExists: //blue
-                color.r *= .5f; color.g *= .5f; color.b *= 1f;
+                color.r *= 0f; color.g *= .0f; color.b *= 1f;
                 break;
         }
         color.a = 0.4f;
