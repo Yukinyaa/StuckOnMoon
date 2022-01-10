@@ -10,7 +10,8 @@ public enum Layer
     CollisionOnly = 1,
     SpriteOnly = 2,
     Block = 3,
-    BackgroundOnly = 4
+    BackgroundOnly = 4,
+    All = 0b11111111
 }
 
 public struct SObejctShape

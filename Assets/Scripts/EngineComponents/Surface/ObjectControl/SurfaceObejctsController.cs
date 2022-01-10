@@ -104,6 +104,44 @@ public class SurfaceObejctsController
         
         return true;
     }
+   
+    public IEnumerable<int> GetObjectsAt(int2 pos, Layer layer)
+    {
+        var obj = new SurfaceObject()
+        {
+            postion = pos,
+            objectType = -1,
+            shape = new SObejctShape() { layer = layer, size = new int2(1, 1) }
+        };
+
+        foreach (var oID in chunkController.GetObjectsInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (sObjects.GetUpdating(oID).IsCollideWith(obj))
+                yield return oID;
+    }
+    public int? GetCollidingObject(SurfaceObject obj)
+    {
+        foreach (var oID in chunkController.GetObjectsInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (sObjects.GetUpdating(oID).IsCollideWith(obj))
+                return oID;
+        return null;
+    }
+    public SurfaceObject? GetCollidingBlock(SurfaceObject obj)
+    {
+        foreach (var block in chunkController.GetBlockInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (block.IsCollideWith(obj))
+                return block;
+        return null;
+    }
+    public SurfaceObject? GetCollidingBlockObject(SurfaceObject obj)
+    {
+        foreach (var block in chunkController.GetBlockInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (block.IsCollideWith(obj))
+                return block;
+        foreach (var oID in chunkController.GetObjectsInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (sObjects.GetUpdating(oID).IsCollideWith(obj))
+                return sObjects.GetUpdating(oID);
+        return null;
+    }
 
     public bool CanPlaceObject(int2 pos, int type)
     {

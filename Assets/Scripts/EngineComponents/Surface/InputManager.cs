@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 
-class InputManager : Singleton<InputManager>
+class InputManager : MonoBehaviour
 {
     [SerializeField]
     public KeyCode placeKeyCode;
     [SerializeField]
     int objectOnHand = 0;
 
-    public void DoInput()
+    public void Update()
     {
         if (Input.GetKeyDown(KeyCode.X))
         {
@@ -47,9 +47,10 @@ class InputManager : Singleton<InputManager>
         var placingObjectShape = SObjectTypes.sObjectTypes[objectOnHand].shape;
 
         int2 posArgumented = pos - (new int2(placingObjectShape.size.x, placingObjectShape.size.y) / 2);
-        
+
         //render ghost
 
+        SurfaceManager.Instance.ViewingSurface.RenderGhost(posArgumented, objectOnHand);
 
         if (Input.GetKey(placeKeyCode))
         {
@@ -59,6 +60,7 @@ class InputManager : Singleton<InputManager>
 
             while (posArgumentedInt2.x < 0)
                 posArgumentedInt2.x += SurfaceManager.Instance.ViewingSurface.MapWidth;
+
 
             SurfaceEvent placeObjEvent = 
                 new SurfacePlaceObjectEvent(SurfaceManager.Instance.ViewingSurfaceNo ?? SurfaceManager.Instance.CurrentSurfaceNo, objectOnHand, posArgumentedInt2);

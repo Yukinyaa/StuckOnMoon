@@ -44,6 +44,20 @@ public class SurfaceController
     {
         this.eventsToProcess = events;
     }
+
+    internal void RenderGhost(int2 posArgumented, int objType)
+    {
+        var shapeObj = new SurfaceObject(posArgumented, objType);
+        
+        var obj = sObjectsController.GetCollidingBlockObject(shapeObj);
+        if (obj == null)
+            renderer.RenderGhost(shapeObj);
+        else if (obj == shapeObj)
+            renderer.RenderGhost(shapeObj, SurfaceRenderer.GhostStatus.AlreadyExists);
+        else
+            renderer.RenderGhost(shapeObj, SurfaceRenderer.GhostStatus.Collision);
+    }
+
     public void ProcessEvents()
     {
         Debug.Assert(eventsToProcess.TrueForAll(a => a.RegistedFrame == UpdateManager.UpdatingFrameNo || a.RegistedFrame == null));

@@ -14,6 +14,7 @@ public class SurfaceRenderer : MonoBehaviour
     ChunkData[,] chunkData;
     HashSet<int2> enabledChunks;
     HashSet<int2> updatedChunks;
+    SurfaceGameObject ghost;
     struct ChunkData
     {
         public ulong lastUpdatedFrame;
@@ -25,7 +26,7 @@ public class SurfaceRenderer : MonoBehaviour
     {
         gameObjects = new List<SurfaceGameObject>();
         InitalizeChunks(xChunkCount, yChunkCount);
-
+        
         updatedChunks = new HashSet<int2>();
         enabledChunks = new HashSet<int2>();
     }
@@ -48,6 +49,43 @@ public class SurfaceRenderer : MonoBehaviour
             }
 
         }
+    }
+    public enum GhostStatus
+    { 
+        Normal,
+        Collision,
+        AlreadyExists
+    }
+    public void RenderGhost(SurfaceObject objData, GhostStatus status = GhostStatus.Normal)
+    {
+        if (ghost != null)
+            Destroy(ghost.gameObject);
+        
+        var objPF = SurfaceGameObjectPrefabs.Instance[objData.objectType];
+        if (objPF == null)
+        {
+            ghost = null; 
+            return;
+        }
+        ghost = Instantiate(objPF).GetComponent<SurfaceGameObject>();
+        ghost.name = "ghost";
+        ghost.transform.SetAsFirstSibling();
+
+
+        ghost.UpdateMe(objData);
+
+        var color = ghost.GetComponent<SpriteRenderer>().color;
+        switch (status)
+        {
+            case GhostStatus.Collision: //red
+                color.r *= 1f; color.g *= .5f; color.b *= .5f;
+                break;
+            case GhostStatus.AlreadyExists: //blue
+                color.r *= .5f; color.g *= .5f; color.b *= 1f;
+                break;
+        }
+        color.a = 0.4f;
+        ghost.GetComponent<SpriteRenderer>().color = color;
     }
 
     public void StartObjectUpdate() {

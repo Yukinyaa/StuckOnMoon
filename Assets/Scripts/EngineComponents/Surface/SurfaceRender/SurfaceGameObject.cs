@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class    SurfaceGameObject : MonoBehaviour
+public class SurfaceGameObject : MonoBehaviour
 {
     public int sObjectType => data.objectType;
     public SurfaceObject data;

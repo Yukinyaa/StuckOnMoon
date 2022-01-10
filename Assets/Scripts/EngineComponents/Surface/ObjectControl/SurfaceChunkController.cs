@@ -85,6 +85,20 @@ public class SurfaceChunkController
             }
         }
     }
+
+    public IEnumerable<SurfaceObject> GetRenderingBlockInRange(int2 min, int2 max)
+    {
+        foreach ((int xChunk, int yChunk) in ChunkRange(min, max))
+        {
+            if (chunks.Updating[xChunk, yChunk] != null)
+            {
+                foreach (var block in chunks.Rendering[xChunk, yChunk].GetBlocksItor())
+                {
+                    yield return block;
+                }
+            }
+        }
+    }
     public void RegisterObject(SurfaceObject o, int oID)
     {
         chunks.Updating[o.BelongsToChunkX, o.BelongsToChunkY].RegisterObject(oID);
