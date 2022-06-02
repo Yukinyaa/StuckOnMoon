@@ -15,26 +15,41 @@ class InputManager : MonoBehaviour
 
     public void Update()
     {
+
         if (Input.GetKeyDown(KeyCode.X))
         {
             objectOnHand = -1;
         }
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            objectOnHand = 0;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             objectOnHand = 1;
         }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             objectOnHand = 2;
         }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             objectOnHand = 3;
         }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             objectOnHand = 4;
         }
+        if (objectOnHand == 0 || objectOnHand == -1)
+        {
+            Cursor.visible = true;
+            //Cursor.SetCursor();
+        }
+        else
+            Cursor.visible = false;
+        
+
+
 
         if (objectOnHand == -1)
         {
@@ -42,7 +57,7 @@ class InputManager : MonoBehaviour
             //deconstruct? idk
         }
 
-
+        
         int2 pos = SurfaceManager.Instance.MousePositionAsGridPosition();
         var placingObjectShape = SObjectTypes.sObjectTypes[objectOnHand].shape;
 

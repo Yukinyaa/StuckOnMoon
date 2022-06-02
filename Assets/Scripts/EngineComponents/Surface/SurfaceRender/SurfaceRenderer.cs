@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using UnityEngine;
-using static MathExtension;
 
 public class SurfaceRenderer : MonoBehaviour
 {
@@ -26,7 +24,7 @@ public class SurfaceRenderer : MonoBehaviour
     {
         gameObjects = new List<SurfaceGameObject>();
         InitalizeChunks(xChunkCount, yChunkCount);
-        
+
         updatedChunks = new HashSet<int2>();
         enabledChunks = new HashSet<int2>();
     }
@@ -35,6 +33,7 @@ public class SurfaceRenderer : MonoBehaviour
     {
         chunks = new Transform[xChunkCount, yChunkCount];
         chunkData = new ChunkData[xChunkCount, yChunkCount];
+
         for (int x = 0; x < xChunkCount; x++)
         {
             for (int y = 0; y < yChunkCount; y++)
@@ -51,7 +50,7 @@ public class SurfaceRenderer : MonoBehaviour
         }
     }
     public enum GhostStatus
-    { 
+    {
         Normal,
         Collision,
         AlreadyExists
@@ -60,16 +59,17 @@ public class SurfaceRenderer : MonoBehaviour
     {
         if (ghost != null)
             Destroy(ghost.gameObject);
-        
+
         var objPF = SurfaceGameObjectPrefabs.Instance[objData.objectType];
         if (objPF == null)
         {
-            ghost = null; 
+            ghost = null;
             return;
         }
         ghost = Instantiate(objPF).GetComponent<SurfaceGameObject>();
         ghost.name = "ghost";
         ghost.transform.SetAsLastSibling();
+
 
 
         ghost.UpdateMe(objData);
@@ -85,11 +85,12 @@ public class SurfaceRenderer : MonoBehaviour
                 color.r *= 0f; color.g *= .0f; color.b *= 1f;
                 break;
         }
-        color.a = 0.7f;
+        color.a *= 0.7f;
         ghost.GetComponent<SpriteRenderer>().color = color;
     }
 
-    public void StartObjectUpdate() {
+    public void StartObjectUpdate()
+    {
         updatedChunks.Clear();
     }
 
@@ -105,9 +106,9 @@ public class SurfaceRenderer : MonoBehaviour
 
     void ExpandObjectList(int index)
     {
+        gameObjects.Capacity = index + 1;
         if (gameObjects.Count <= index)
         {
-            gameObjects.Capacity = index + 1;
             while (gameObjects.Count <= index)
                 gameObjects.Add(null);
         }
@@ -118,7 +119,7 @@ public class SurfaceRenderer : MonoBehaviour
         var chunkLocalX = objData.ChunkLocalPosX;
         var chunkLocalY = objData.ChunkLocalPosY;
 
-        
+
 
         SetChunkAsUpdated(chunkID);
 
@@ -140,7 +141,7 @@ public class SurfaceRenderer : MonoBehaviour
 
         if (go == null)
         {
-            go = chunkData[chunkID.x, chunkID.y].blocks[chunkLocalX, chunkLocalY] 
+            go = chunkData[chunkID.x, chunkID.y].blocks[chunkLocalX, chunkLocalY]
                 = Instantiate(SurfaceGameObjectPrefabs.Instance[objData.objectType], chunks[objData.BelongsToChunkX, objData.BelongsToChunkY]).GetComponent<SurfaceGameObject>();
             go.name = $"block [{chunkLocalX}, {chunkLocalY}] @chk[{chunkID.x}, {chunkID.y}]";
         }
@@ -157,7 +158,7 @@ public class SurfaceRenderer : MonoBehaviour
     public void UpdateObject(SurfaceObject? obj, int index)
     {
         ExpandObjectList(index);
-        
+
         if (obj == null || obj.Value.objectType == 0)
         {
             if (gameObjects[index] != null)
@@ -206,7 +207,7 @@ public class SurfaceRenderer : MonoBehaviour
             .ToList().ForEach(n => chunks[n.x, n.y].gameObject.SetActive(false));
 
         enabledChunks.RemoveWhere(n => chunkData[n.x, n.y].lastUpdatedFrame != UpdateManager.UpdatingFrameNo);
-        foreach(var n in enabledChunks)
+        foreach (var n in enabledChunks)
         {
             chunkData[n.x, n.y].forceUpdate = false;
             chunks[n.x, n.y].SetAsFirstSibling();

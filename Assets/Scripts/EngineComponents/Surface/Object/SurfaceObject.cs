@@ -4,9 +4,17 @@ using static MathExtension;
 
 public struct SurfaceObject
 {
+    public enum Status
+    { 
+        BuiltAndEnabled,
+        GhostNormal,
+        GhostError,
+        GhostOverlap,
+        Building = 10
+    }
     public int2 postion;
     public int objectType;
-    public byte status;//is built, enabled is ghost etc
+    public Status status;//is built, enabled is ghost etc
     //derives from these
     public SObejctShape shape;
 
