@@ -75,6 +75,7 @@ public class SurfaceRenderer : MonoBehaviour
         ghost.UpdateMe(objData);
 
         var color = ghost.GetComponent<SpriteRenderer>().color;
+        ghost.transform.position += Vector3.back;// render on fronrt
         switch (status)
         {
             case GhostStatus.Collision: //red
@@ -84,7 +85,7 @@ public class SurfaceRenderer : MonoBehaviour
                 color.r *= 0f; color.g *= .0f; color.b *= 1f;
                 break;
         }
-        color.a = 0.4f;
+        color.a = 0.7f;
         ghost.GetComponent<SpriteRenderer>().color = color;
     }
 

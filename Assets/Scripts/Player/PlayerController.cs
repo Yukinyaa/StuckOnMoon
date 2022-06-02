@@ -35,10 +35,13 @@ public class PlayerController : PhysicsObject
             }
         }
 
-        bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < 0.01f));
-        if (flipSprite)
+        if (spriteRenderer != null)
         {
-            spriteRenderer.flipX = !spriteRenderer.flipX;
+            bool flipSprite = (spriteRenderer.flipX ? (move.x > 0.01f) : (move.x < 0.01f));
+            if (flipSprite)
+            {
+                spriteRenderer.flipX = !spriteRenderer.flipX;
+            }
         }
 
         if (animator != null)
