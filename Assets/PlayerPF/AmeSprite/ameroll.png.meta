@@ -1,0 +1,564 @@
+fileFormatVersion: 2
+guid: ede8e694bcf80174c86cd03f91ab44a3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7101582033015863612
+    second: ameroll_0
+  - first:
+      213: 4330018575624344391
+    second: ameroll_1
+  - first:
+      213: -7132311787629333490
+    second: ameroll_2
+  - first:
+      213: -6911938213096557818
+    second: ameroll_3
+  - first:
+      213: 804903985192092962
+    second: ameroll_4
+  - first:
+      213: -8576341754933253449
+    second: ameroll_5
+  - first:
+      213: 6392235991502486144
+    second: ameroll_6
+  - first:
+      213: -8350942035656876918
+    second: ameroll_7
+  - first:
+      213: -9129333964915853174
+    second: ameroll_8
+  - first:
+      213: -6179000937598367361
+    second: ameroll_9
+  - first:
+      213: 6049643236342988033
+    second: ameroll_10
+  - first:
+      213: 4079152014871739340
+    second: ameroll_11
+  - first:
+      213: -8985427182952210169
+    second: ameroll_12
+  - first:
+      213: 7376729165380610158
+    second: ameroll_13
+  - first:
+      213: 3788690761353112819
+    second: ameroll_14
+  - first:
+      213: -7903123493626259860
+    second: ameroll_15
+  - first:
+      213: 1945153961925247
+    second: ameroll_16
+  - first:
+      213: -5929697690950202126
+    second: ameroll_17
+  - first:
+      213: -5713974376906028333
+    second: ameroll_18
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 420
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 1024
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ameroll_0
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 3600
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c39f435bb33ed8260800000000000000
+      internalID: 7101582033015863612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_1
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 3600
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7439eeef3f0571c30800000000000000
+      internalID: 4330018575624344391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_2
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 3600
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e04b50fb730f40d90800000000000000
+      internalID: -7132311787629333490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_3
+      rect:
+        serializedVersion: 2
+        x: 2700
+        y: 3600
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6037ee2f0dcd310a0800000000000000
+      internalID: -6911938213096557818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2700
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 225cba3f8e79b2b00800000000000000
+      internalID: 804903985192092962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_5
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 2700
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ba6ad00d96baf880800000000000000
+      internalID: -8576341754933253449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_6
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 2700
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08af8f944c8c5b850800000000000000
+      internalID: 6392235991502486144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_7
+      rect:
+        serializedVersion: 2
+        x: 2700
+        y: 2700
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8c5bc8b67e7b1c80800000000000000
+      internalID: -8350942035656876918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_8
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1800
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a883841d0271e4180800000000000000
+      internalID: -9129333964915853174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_9
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1800
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f79c4af8267cf3aa0800000000000000
+      internalID: -6179000937598367361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_10
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 1800
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10d71189876a4f350800000000000000
+      internalID: 6049643236342988033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_11
+      rect:
+        serializedVersion: 2
+        x: 2700
+        y: 1800
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccbbf3f252f0c9830800000000000000
+      internalID: 4079152014871739340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 900
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 701aefc75995d4380800000000000000
+      internalID: -8985427182952210169
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_13
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 900
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6866c2a7186f5660800000000000000
+      internalID: 7376729165380610158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_14
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 900
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fca1429c22249430800000000000000
+      internalID: 3788690761353112819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_15
+      rect:
+        serializedVersion: 2
+        x: 2700
+        y: 900
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c66dc5a1e07725290800000000000000
+      internalID: -7903123493626259860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7a1fe27b19e60000800000000000000
+      internalID: 1945153961925247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_17
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 0
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fc8571fd5b75bda0800000000000000
+      internalID: -5929697690950202126
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ameroll_18
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 0
+        width: 900
+        height: 900
+      alignment: 9
+      pivot: {x: 0.6, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3da05d00492e3b0b0800000000000000
+      internalID: -5713974376906028333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
