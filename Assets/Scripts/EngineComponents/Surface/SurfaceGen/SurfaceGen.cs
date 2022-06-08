@@ -79,6 +79,14 @@ public class SurfaceGen
         else
             return 0;
     }
+    public int SurfaceGenFlatty(int x, int y)
+    {
+        if (med > (Fix64)y)
+            return 1;
+        else
+            return 0;
+    }
+
 
     Fix64 ValAt(Fix64 x, Fix64 y, Fix64 z, Fix64 Scale)
     {

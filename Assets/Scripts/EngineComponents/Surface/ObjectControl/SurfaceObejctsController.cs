@@ -56,9 +56,21 @@ public class SurfaceObejctsController
         {
             if (chunkController.IsChunkGenerated(xChunk, yChunk) == false)
             {
-                Debug.Log($"ev: {xChunk}, {yChunk}");
-                EventManager.Instance.RegisterLocalEvent(new SurfaceGenerateMapEvent(surfaceInfo.surfaceNo, new int2(xChunk, yChunk)));
-                return;
+                //Debug.Log($"ev: {xChunk}, {yChunk}");
+                EventManager.Instance.RegisterLocalEvent(new SurfaceGenerateMapEvent(surfaceInfo.surfaceNo, new int2(xChunk, yChunk), false));
+                //return;
+            }
+        }
+    }
+    public void ForceGenerateUnknownChunkChunkInRange(int2 min, int2 max)
+    {
+        foreach ((int xChunk, int yChunk) in chunkController.ChunkRange(min, max))
+        {
+            if (chunkController.IsChunkGenerated(xChunk, yChunk) == false)
+            {
+                //Debug.Log($"ev: {xChunk}, {yChunk}");
+                EventManager.Instance.RegisterLocalEvent(new SurfaceGenerateMapEvent(surfaceInfo.surfaceNo, new int2(xChunk, yChunk), true));
+                //return;
             }
         }
     }
