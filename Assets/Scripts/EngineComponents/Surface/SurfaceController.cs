@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
@@ -44,8 +45,11 @@ public class SurfaceController
     {
         this.eventsToProcess = events;
     }
-
-    internal void RenderGhost(int2 posArgumented, int objType)
+    public void RenderUI()
+    {
+        GameUIManager.Instance.Render(GetMousePointedObj()?.ToString());
+    }
+    public void RenderGhost(int2 posArgumented, int objType)
     {
         var shapeObj = new SurfaceObject(posArgumented, objType);
         
@@ -56,6 +60,8 @@ public class SurfaceController
             renderer.RenderGhost(shapeObj, SurfaceRenderer.GhostStatus.AlreadyExists);
         else
             renderer.RenderGhost(shapeObj, SurfaceRenderer.GhostStatus.Collision);
+
+
     }
 
     public void ProcessEvents()
@@ -134,6 +140,20 @@ public class SurfaceController
         var renderObj = sObjectsController.GetRenderingObjectsInChunkRangeItor(rangeMin, rangeMax);
         var renderBlk = sObjectsController.GetRenderingBlocksInChunkRangeItor(rangeMin, rangeMax);
         renderer.DoRender(renderObj, renderBlk);
+
+        
+        
+    }
+    public SurfaceObject? GetMousePointedObj()
+    {
+        var mouseCheckObj = new SurfaceObject() { postion = MousePositionAsGridPosition(), shape = SObejctShape.PointCheck, status = SurfaceObject.Status.BuiltAndEnabled };
+        var UIObs = sObjectsController.GetCollidingBlockObjects(mouseCheckObj);
+        return UIObs.Aggregate((a, b) => (a, b) switch
+        {
+            { a: null } => b,
+            { b: null } => a,
+            _ => a.Value.shape.layer > b.Value.shape.layer ? a: b
+        });
     }
 
 

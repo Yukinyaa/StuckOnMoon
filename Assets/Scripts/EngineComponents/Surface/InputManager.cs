@@ -64,7 +64,7 @@ class InputManager : MonoBehaviour
         int2 posArgumented = pos - (new int2(placingObjectShape.size.x, placingObjectShape.size.y) / 2);
 
         //render ghost
-
+        SurfaceManager.Instance.ViewingSurface.RenderUI();
         SurfaceManager.Instance.ViewingSurface.RenderGhost(posArgumented, objectOnHand);
 
         if (Input.GetKey(placeKeyCode))

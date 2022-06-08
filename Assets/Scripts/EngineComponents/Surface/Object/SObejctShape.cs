@@ -52,4 +52,5 @@ public struct SObejctShape
 
     static public SObejctShape Block => new SObejctShape() { size = new int2(1, 1), layer = Layer.Block };
     static public SObejctShape Background => new SObejctShape() { size = new int2(1, 1), layer = Layer.BackgroundOnly };
+    static public SObejctShape PointCheck => new SObejctShape() { size = new int2(1, 1), layer = Layer.All };
 }

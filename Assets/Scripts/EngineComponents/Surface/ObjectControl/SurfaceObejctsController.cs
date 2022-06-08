@@ -142,6 +142,16 @@ public class SurfaceObejctsController
                 return sObjects.GetUpdating(oID);
         return null;
     }
+    public IEnumerable<SurfaceObject?> GetCollidingBlockObjects(SurfaceObject obj)
+    {
+        foreach (var block in chunkController.GetBlockInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (block.IsCollideWith(obj))
+                yield return block;
+        foreach (var oID in chunkController.GetObjectsInRange(obj.MinAABBPos, obj.MaxAABBPos))
+            if (sObjects.GetUpdating(oID).IsCollideWith(obj))
+                yield return sObjects.GetUpdating(oID);
+        yield return null;
+    }
 
     public bool CanPlaceObject(int2 pos, int type)
     {

@@ -106,6 +106,7 @@ public class SurfaceRenderer : MonoBehaviour
 
     void ExpandObjectList(int index)
     {
+        if (gameObjects.Capacity > index) return;
         gameObjects.Capacity = index + 1;
         if (gameObjects.Count <= index)
         {

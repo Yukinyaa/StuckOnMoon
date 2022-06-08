@@ -40,7 +40,10 @@ public class UpdateManager : Singleton<UpdateManager>
     public void Update()
     {
         //InputManager.Instance.DoInput();
+        UnityEngine.Profiling.Profiler.BeginSample("Waiting Update");
         PrevFrameTask?.Wait();
+        UnityEngine.Profiling.Profiler.EndSample();
+
 
         ++UpdatingFrameNo;
         FrameHash = (byte)(UpdatingFrameNo % byte.MaxValue);

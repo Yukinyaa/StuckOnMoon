@@ -2,17 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameUIManager : MonoBehaviour
+public class GameUIManager : Singleton<GameUIManager>
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    InfoUI infoUI;
 
-    // Update is called once per frame
-    void Update()
+    public void Render(string infoText)
     {
+        if (infoText == null)
+        {
+            infoUI.gameObject.SetActive(false);
+        }
+        
+        else
+        {
+            infoUI.DescriptionText = infoText;
+            infoUI.gameObject.SetActive(true);
+        }
         
     }
 }
